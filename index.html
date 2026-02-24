@@ -37,7 +37,6 @@
             padding-bottom: 100px;
         }
         
-        /* Header */
         .header {
             background: var(--nccs-dark);
             color: white;
@@ -48,26 +47,11 @@
             z-index: 100;
         }
         
-        .header h1 {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 600;
-        }
+        .header h1 { margin: 0; font-size: 18px; font-weight: 600; }
+        .header-subtitle { font-size: 12px; opacity: 0.7; margin-top: 2px; }
         
-        .header-subtitle {
-            font-size: 12px;
-            opacity: 0.7;
-            margin-top: 2px;
-        }
+        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
         
-        /* Main content */
-        .container {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        
-        /* Cards */
         .card {
             background: white;
             border-radius: 16px;
@@ -76,398 +60,179 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         
-        .card h2 {
-            margin: 0 0 16px 0;
-            font-size: 18px;
-            color: var(--nccs-teal);
-        }
+        .card h2 { margin: 0 0 16px 0; font-size: 18px; color: var(--nccs-teal); }
         
-        .card h3 {
-            margin: 0 0 12px 0;
-            font-size: 16px;
-        }
-        
-        /* Form elements */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
+        .form-group { margin-bottom: 20px; }
         .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--gray-700);
-            margin-bottom: 8px;
+            display: block; font-size: 14px; font-weight: 600;
+            color: var(--gray-700); margin-bottom: 8px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 14px 16px; font-size: 16px;
+            border: 2px solid var(--gray-200); border-radius: 12px;
+            background: white; -webkit-appearance: none;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--nccs-accent);
         }
         
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 14px 16px;
-            font-size: 18px;
-            border: 2px solid var(--gray-200);
-            border-radius: 12px;
-            background: white;
-            -webkit-appearance: none;
-        }
-        
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: var(--nccs-accent);
-        }
-        
-        /* Number picker */
-        .number-picker {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
+        .number-picker { display: flex; gap: 8px; flex-wrap: wrap; }
         .number-picker button {
-            width: 52px;
-            height: 52px;
-            border: 2px solid var(--gray-200);
-            background: white;
-            border-radius: 12px;
-            font-size: 20px;
-            font-weight: 600;
-            cursor: pointer;
+            width: 52px; height: 52px;
+            border: 2px solid var(--gray-200); background: white;
+            border-radius: 12px; font-size: 20px; font-weight: 600; cursor: pointer;
         }
-        
         .number-picker button.selected {
-            border-color: var(--nccs-accent);
-            background: var(--nccs-accent);
-            color: white;
+            border-color: var(--nccs-accent); background: var(--nccs-accent); color: white;
         }
+        .number-picker button:active { transform: scale(0.95); }
         
-        .number-picker button:active {
-            transform: scale(0.95);
-        }
-        
-        /* Buttons */
         .btn {
-            width: 100%;
-            padding: 16px;
-            font-size: 18px;
-            font-weight: 600;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            width: 100%; padding: 16px; font-size: 18px; font-weight: 600;
+            border: none; border-radius: 12px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
+        .btn-primary { background: var(--nccs-accent); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-secondary { background: var(--gray-200); color: var(--gray-700); }
+        .btn-small { width: auto; padding: 10px 16px; font-size: 14px; }
+        .btn:active { opacity: 0.9; transform: scale(0.98); }
+        .btn:disabled { background: var(--gray-300); cursor: not-allowed; transform: none; }
         
-        .btn-primary {
-            background: var(--nccs-accent);
-            color: white;
-        }
-        
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: var(--gray-200);
-            color: var(--gray-700);
-        }
-        
-        .btn:active {
-            opacity: 0.9;
-            transform: scale(0.98);
-        }
-        
-        .btn:disabled {
-            background: var(--gray-300);
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        /* Room list */
         .room-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px;
-            background: var(--gray-100);
-            border-radius: 12px;
-            margin-bottom: 8px;
-            cursor: pointer;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px; background: var(--gray-100); border-radius: 12px;
+            margin-bottom: 8px; cursor: pointer;
         }
+        .room-item:active { background: var(--gray-200); }
+        .room-item h4 { margin: 0; font-size: 18px; }
+        .room-item p { margin: 4px 0 0 0; font-size: 13px; color: var(--gray-500); }
+        .room-item .progress { text-align: right; }
+        .room-item .progress-pct { font-size: 20px; font-weight: 700; color: var(--nccs-teal); }
+        .room-item .progress-pct.complete { color: var(--success); }
         
-        .room-item:active {
-            background: var(--gray-200);
-        }
-        
-        .room-item h4 {
-            margin: 0;
-            font-size: 18px;
-        }
-        
-        .room-item p {
-            margin: 4px 0 0 0;
-            font-size: 13px;
-            color: var(--gray-500);
-        }
-        
-        .room-item .progress {
-            text-align: right;
-        }
-        
-        .room-item .progress-pct {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--nccs-teal);
-        }
-        
-        .room-item .progress-pct.complete {
-            color: var(--success);
-        }
-        
-        /* Stage tabs */
-        .stage-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-        
+        .stage-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
         .stage-tab {
-            flex: 1;
-            padding: 14px 8px;
-            border: 2px solid var(--gray-200);
-            background: white;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--gray-500);
-            cursor: pointer;
-            text-align: center;
+            flex: 1; padding: 14px 8px;
+            border: 2px solid var(--gray-200); background: white;
+            border-radius: 10px; font-size: 14px; font-weight: 600;
+            color: var(--gray-500); cursor: pointer; text-align: center;
         }
+        .stage-tab.active { border-color: var(--nccs-teal); background: var(--nccs-teal); color: white; }
+        .stage-tab.complete { border-color: var(--success); background: var(--success); color: white; }
+        .stage-tab .count { display: block; font-size: 11px; font-weight: 400; margin-top: 2px; opacity: 0.8; }
         
-        .stage-tab.active {
-            border-color: var(--nccs-teal);
-            background: var(--nccs-teal);
-            color: white;
-        }
-        
-        .stage-tab.complete {
-            border-color: var(--success);
-            background: var(--success);
-            color: white;
-        }
-        
-        .stage-tab .count {
-            display: block;
-            font-size: 11px;
-            font-weight: 400;
-            margin-top: 2px;
-            opacity: 0.8;
-        }
-        
-        /* Penetration sections */
-        .penetration-section {
-            margin-bottom: 24px;
-        }
-        
+        .penetration-section { margin-bottom: 24px; }
         .penetration-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 8px; padding-bottom: 8px; border-bottom: 2px solid var(--gray-200);
+        }
+        .penetration-header h3 { margin: 0; font-size: 16px; color: var(--nccs-teal); }
+        .penetration-status { font-size: 13px; font-weight: 600; }
+        .penetration-status.complete { color: var(--success); }
+        
+        .penetration-comment {
             margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid var(--gray-200);
         }
-        
-        .penetration-header h3 {
-            margin: 0;
-            font-size: 16px;
-            color: var(--nccs-teal);
+        .penetration-comment textarea {
+            width: 100%; padding: 10px 12px; font-size: 14px;
+            border: 2px solid var(--gray-200); border-radius: 8px;
+            background: white; resize: none; min-height: 60px;
+            font-family: inherit;
         }
-        
-        .penetration-status {
-            font-size: 13px;
-            font-weight: 600;
+        .penetration-comment textarea:focus {
+            outline: none; border-color: var(--nccs-teal);
         }
-        
-        .penetration-status.complete {
-            color: var(--success);
-        }
-        
-        /* Cut cards */
-        .cuts-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        
-        .cut-card {
-            background: var(--gray-100);
-            border-radius: 12px;
-            padding: 14px;
-        }
-        
-        .cut-card h4 {
-            margin: 0 0 4px 0;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        
-        .cut-card .cut-label {
-            font-size: 12px;
+        .penetration-comment textarea::placeholder {
             color: var(--gray-500);
-            margin-bottom: 12px;
         }
         
-        /* Photo capture buttons */
-        .photo-buttons {
-            display: flex;
-            gap: 8px;
-        }
+        .cuts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .cut-card { background: var(--gray-100); border-radius: 12px; padding: 14px; }
+        .cut-card h4 { margin: 0 0 4px 0; font-size: 14px; font-weight: 600; }
+        .cut-card .cut-label { font-size: 12px; color: var(--gray-500); margin-bottom: 12px; }
         
+        .photo-buttons { display: flex; gap: 8px; }
         .photo-btn {
-            flex: 1;
-            aspect-ratio: 1;
-            border: 3px dashed var(--gray-300);
-            background: white;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 12px;
-            color: var(--gray-500);
-            gap: 4px;
-            min-height: 70px;
+            flex: 1; aspect-ratio: 1;
+            border: 3px dashed var(--gray-300); background: white;
+            border-radius: 12px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; cursor: pointer;
+            font-size: 12px; color: var(--gray-500); gap: 4px; min-height: 70px;
         }
+        .photo-btn .icon { font-size: 24px; }
+        .photo-btn.captured { border: 3px solid var(--success); background: #e8f5e9; color: var(--success); }
+        .photo-btn:active { transform: scale(0.95); }
         
-        .photo-btn .icon {
-            font-size: 24px;
-        }
-        
-        .photo-btn.captured {
-            border: 3px solid var(--success);
-            background: #e8f5e9;
-            color: var(--success);
-        }
-        
-        .photo-btn:active {
-            transform: scale(0.95);
-        }
-        
-        /* Instructions box */
         .instructions {
-            background: #fff8e1;
-            border: 1px solid #ffc107;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
+            background: #fff8e1; border: 1px solid #ffc107;
+            border-radius: 12px; padding: 16px; margin-bottom: 20px;
         }
+        .instructions h4 { margin: 0 0 8px 0; color: #f57f17; font-size: 14px; }
+        .instructions p { margin: 0; font-size: 13px; color: #795548; line-height: 1.5; }
         
-        .instructions h4 {
-            margin: 0 0 8px 0;
-            color: #f57f17;
-            font-size: 14px;
-        }
+        .hidden { display: none !important; }
+        #photoInput { display: none; }
         
-        .instructions p {
-            margin: 0;
-            font-size: 13px;
-            color: #795548;
-            line-height: 1.5;
-        }
-        
-        /* Hidden elements */
-        .hidden {
-            display: none !important;
-        }
-        
-        #photoInput {
-            display: none;
-        }
-        
-        /* Toast */
         .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--gray-700);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 14px;
-            z-index: 300;
-            opacity: 0;
-            transition: opacity 0.3s;
-            text-align: center;
-            max-width: 90%;
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+            background: var(--gray-700); color: white; padding: 12px 24px;
+            border-radius: 25px; font-size: 14px; z-index: 300;
+            opacity: 0; transition: opacity 0.3s; text-align: center; max-width: 90%;
         }
+        .toast.visible { opacity: 1; }
         
-        .toast.visible {
-            opacity: 1;
-        }
-        
-        /* Back button */
         .back-btn {
-            background: none;
-            border: none;
-            color: var(--nccs-accent);
-            font-size: 16px;
-            padding: 8px 0;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-bottom: 12px;
+            background: none; border: none; color: var(--nccs-accent);
+            font-size: 16px; padding: 8px 0; cursor: pointer;
+            display: flex; align-items: center; gap: 4px; margin-bottom: 12px;
         }
         
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--gray-500);
-        }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--gray-500); }
+        .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
         
-        .empty-state .icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-        
-        /* Safety banner */
         .safety-banner {
-            background: #e8f5e9;
-            border: 1px solid var(--success);
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
+            background: #e8f5e9; border: 1px solid var(--success);
+            border-radius: 12px; padding: 14px 16px; margin-bottom: 20px;
+            display: flex; align-items: flex-start; gap: 12px;
+        }
+        .safety-banner .icon { font-size: 24px; flex-shrink: 0; }
+        .safety-banner p { margin: 0; font-size: 13px; color: #2e7d32; line-height: 1.4; }
+        
+        .action-row {
+            display: flex; gap: 8px; margin-top: 16px;
+        }
+        .action-row .btn { flex: 1; }
+        
+        .edit-btn {
+            background: none; border: none; color: var(--nccs-teal);
+            font-size: 14px; padding: 8px; cursor: pointer;
         }
         
-        .safety-banner .icon {
-            font-size: 24px;
-            flex-shrink: 0;
-        }
-        
-        .safety-banner p {
-            margin: 0;
-            font-size: 13px;
-            color: #2e7d32;
-            line-height: 1.4;
-        }
-        
-        /* Delete button */
         .delete-btn {
-            background: none;
-            border: none;
-            color: #c0392b;
-            font-size: 14px;
-            padding: 8px;
-            cursor: pointer;
+            background: none; border: none; color: #c0392b;
+            font-size: 14px; padding: 8px; cursor: pointer;
         }
+        
+        .room-header-row {
+            display: flex; justify-content: space-between; align-items: start;
+        }
+        
+        .room-actions { display: flex; gap: 4px; }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 200;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        .modal {
+            background: white; border-radius: 16px; padding: 24px;
+            width: 100%; max-width: 400px;
+        }
+        .modal h3 { margin: 0 0 16px 0; font-size: 18px; color: var(--nccs-teal); }
     </style>
 </head>
 <body>
@@ -481,7 +246,7 @@
         <div id="homeScreen">
             <div class="safety-banner">
                 <span class="icon">✓</span>
-                <p><strong>Crash-proof:</strong> Each photo saves directly to your Files app (Google Drive). Nothing stored in browser — if app crashes, your photos are safe.</p>
+                <p><strong>Crash-proof:</strong> Photos save directly to Files. Comments export as a separate notes file.</p>
             </div>
             
             <div class="card">
@@ -493,9 +258,7 @@
                 </div>
             </div>
             
-            <button class="btn btn-primary" onclick="showSetup()">
-                ➕ New Room
-            </button>
+            <button class="btn btn-primary" onclick="showSetup()">➕ New Room</button>
         </div>
         
         <!-- SETUP SCREEN -->
@@ -503,7 +266,7 @@
             <button class="back-btn" onclick="showHome()">← Back</button>
             
             <div class="card">
-                <h2>New Room Setup</h2>
+                <h2 id="setupTitle">New Room Setup</h2>
                 
                 <div class="form-group">
                     <label>Room Number</label>
@@ -544,7 +307,7 @@
                     </select>
                 </div>
                 
-                <button class="btn btn-primary" id="createRoomBtn" onclick="createRoom()" disabled>
+                <button class="btn btn-primary" id="createRoomBtn" onclick="saveRoom()" disabled>
                     Create Room
                 </button>
             </div>
@@ -555,58 +318,113 @@
             <button class="back-btn" onclick="showHome()">← All Rooms</button>
             
             <div class="card">
-                <div style="display:flex;justify-content:space-between;align-items:start;">
+                <div class="room-header-row">
                     <div>
                         <h2 style="margin-bottom:4px;">Room <span id="captureRoomNum"></span></h2>
                         <p style="margin:0;font-size:13px;color:var(--gray-500);" id="captureRoomMeta"></p>
                     </div>
-                    <button class="delete-btn" onclick="confirmDelete()">🗑️ Delete</button>
+                    <div class="room-actions">
+                        <button class="edit-btn" onclick="editRoom()">✏️ Edit</button>
+                        <button class="delete-btn" onclick="confirmDelete()">🗑️</button>
+                    </div>
                 </div>
             </div>
             
             <div class="instructions">
-                <h4>📱 How it works</h4>
-                <p>Tap a photo button → Camera opens → Take photo → <strong>Save to Files</strong> when prompted. Choose your Google Drive NCCS folder.</p>
+                <h4>📱 Workflow</h4>
+                <p>1. Take photos → Save to Files<br>
+                   2. Add comments per penetration<br>
+                   3. Tap "Export Notes" when done</p>
             </div>
             
             <div class="stage-tabs" id="stageTabs">
                 <button class="stage-tab active" data-stage="before" onclick="setStage('before')">
-                    BEFORE
-                    <span class="count" id="beforeCount">0/0</span>
+                    BEFORE<span class="count" id="beforeCount">0/0</span>
                 </button>
                 <button class="stage-tab" data-stage="after" onclick="setStage('after')">
-                    AFTER
-                    <span class="count" id="afterCount">0/0</span>
+                    AFTER<span class="count" id="afterCount">0/0</span>
                 </button>
                 <button class="stage-tab" data-stage="patch" onclick="setStage('patch')">
-                    PATCH
-                    <span class="count" id="patchCount">0/0</span>
+                    PATCH<span class="count" id="patchCount">0/0</span>
                 </button>
             </div>
             
             <div id="penetrationsContainer"></div>
+            
+            <div class="action-row">
+                <button class="btn btn-success" onclick="exportNotes()">
+                    📄 Export Notes
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Penetrations Modal -->
+    <div id="editModal" class="modal-overlay hidden" onclick="closeEditModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <h3>Edit Room <span id="editRoomNum"></span></h3>
+            
+            <div class="form-group">
+                <label>Number of Penetrations</label>
+                <div class="number-picker" id="editPenPicker">
+                    <button data-val="1">1</button>
+                    <button data-val="2">2</button>
+                    <button data-val="3">3</button>
+                    <button data-val="4">4</button>
+                    <button data-val="5">5</button>
+                    <button data-val="6">6</button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Floor</label>
+                <select id="editFloorSelect">
+                    <option value="">Select...</option>
+                    <option>Floor 1</option>
+                    <option>Floor 2</option>
+                    <option>Floor 3</option>
+                    <option>Floor 4</option>
+                    <option>Floor 5</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Wing / Building</label>
+                <select id="editWingSelect">
+                    <option value="">Select...</option>
+                    <option>Lodge</option>
+                    <option>Inn</option>
+                    <option>Mountain Homes</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-primary" onclick="saveEditRoom()">Save Changes</button>
         </div>
     </div>
     
     <input type="file" id="photoInput" accept="image/*" capture="environment">
-    
     <div class="toast" id="toast"></div>
     
     <script>
         // ═══════════════════════════════════════════════════════════════════
-        // STATE - Only stores room configs and completion tracking
-        // Photos are saved directly to Files, not stored here
+        // STATE
         // ═══════════════════════════════════════════════════════════════════
         
-        let rooms = {}; // { roomNum: { num_penetrations, floor, wing, captured: {stage_pen_cut_slot: true} } }
+        let rooms = {};
+        // Structure: { roomNum: { 
+        //   num_penetrations, floor, wing, 
+        //   captured: {stage_pen_cut_slot: true},
+        //   comments: {pen: "comment text"}
+        // }}
+        
         let currentRoom = null;
         let currentStage = 'before';
-        let pendingPhoto = null; // { room, pen, cut, slot, stage }
+        let pendingPhoto = null;
+        let editMode = false;
         
-        // Load from localStorage (just tracking data, not photos)
         function loadState() {
             try {
-                const saved = localStorage.getItem('nccs_rooms_v2');
+                const saved = localStorage.getItem('nccs_rooms_v3');
                 if (saved) {
                     rooms = JSON.parse(saved);
                 }
@@ -618,7 +436,7 @@
         
         function saveState() {
             try {
-                localStorage.setItem('nccs_rooms_v2', JSON.stringify(rooms));
+                localStorage.setItem('nccs_rooms_v3', JSON.stringify(rooms));
             } catch (e) {
                 console.error('Failed to save state:', e);
             }
@@ -632,20 +450,39 @@
             document.getElementById('homeScreen').classList.remove('hidden');
             document.getElementById('setupScreen').classList.add('hidden');
             document.getElementById('captureScreen').classList.add('hidden');
+            editMode = false;
             renderRoomList();
         }
         
-        function showSetup() {
+        function showSetup(roomNum = null) {
+            editMode = !!roomNum;
+            
             document.getElementById('homeScreen').classList.add('hidden');
             document.getElementById('setupScreen').classList.remove('hidden');
             document.getElementById('captureScreen').classList.add('hidden');
             
-            // Reset form
-            document.getElementById('roomNumberInput').value = '';
-            document.getElementById('floorSelect').value = '';
-            document.getElementById('wingSelect').value = '';
-            document.querySelectorAll('#penPicker button').forEach(b => b.classList.remove('selected'));
-            document.getElementById('createRoomBtn').disabled = true;
+            document.getElementById('setupTitle').textContent = editMode ? 'Edit Room' : 'New Room Setup';
+            document.getElementById('createRoomBtn').textContent = editMode ? 'Save Changes' : 'Create Room';
+            
+            if (editMode && rooms[roomNum]) {
+                const room = rooms[roomNum];
+                document.getElementById('roomNumberInput').value = roomNum;
+                document.getElementById('roomNumberInput').disabled = true;
+                document.getElementById('floorSelect').value = room.floor || '';
+                document.getElementById('wingSelect').value = room.wing || '';
+                
+                document.querySelectorAll('#penPicker button').forEach(b => {
+                    b.classList.toggle('selected', parseInt(b.dataset.val) === room.num_penetrations);
+                });
+                document.getElementById('createRoomBtn').disabled = false;
+            } else {
+                document.getElementById('roomNumberInput').value = '';
+                document.getElementById('roomNumberInput').disabled = false;
+                document.getElementById('floorSelect').value = '';
+                document.getElementById('wingSelect').value = '';
+                document.querySelectorAll('#penPicker button').forEach(b => b.classList.remove('selected'));
+                document.getElementById('createRoomBtn').disabled = true;
+            }
         }
         
         function showCapture(roomNum) {
@@ -677,14 +514,15 @@
             emptyState.classList.add('hidden');
             container.innerHTML = roomNums.map(roomNum => {
                 const room = rooms[roomNum];
-                const total = room.num_penetrations * 2 * 3 * 2; // pens * cuts * stages * photos
+                const total = room.num_penetrations * 2 * 3 * 2;
                 const captured = Object.keys(room.captured || {}).length;
                 const pct = Math.round((captured / total) * 100);
+                const hasComments = Object.values(room.comments || {}).some(c => c.trim());
                 
                 return `
                     <div class="room-item" onclick="showCapture('${roomNum}')">
                         <div>
-                            <h4>Room ${roomNum}</h4>
+                            <h4>Room ${roomNum} ${hasComments ? '💬' : ''}</h4>
                             <p>${room.floor || '---'} • ${room.wing || '---'} • ${room.num_penetrations} pen.</p>
                         </div>
                         <div class="progress">
@@ -707,13 +545,10 @@
             const wingSelect = document.getElementById('wingSelect');
             const createBtn = document.getElementById('createRoomBtn');
             
-            let selectedPen = null;
-            
             picker.querySelectorAll('button').forEach(btn => {
                 btn.onclick = () => {
                     picker.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
                     btn.classList.add('selected');
-                    selectedPen = parseInt(btn.dataset.val);
                     checkForm();
                 };
             });
@@ -723,27 +558,81 @@
             wingSelect.onchange = checkForm;
             
             function checkForm() {
+                const selectedPen = document.querySelector('#penPicker button.selected');
                 const valid = roomInput.value.trim() && selectedPen && floorSelect.value && wingSelect.value;
                 createBtn.disabled = !valid;
             }
         }
         
-        function createRoom() {
+        function saveRoom() {
             const roomNum = document.getElementById('roomNumberInput').value.trim();
             const floor = document.getElementById('floorSelect').value;
             const wing = document.getElementById('wingSelect').value;
             const pen = parseInt(document.querySelector('#penPicker button.selected')?.dataset.val || 1);
             
-            rooms[roomNum] = {
-                num_penetrations: pen,
-                floor: floor,
-                wing: wing,
-                captured: {}
-            };
+            if (editMode && rooms[roomNum]) {
+                // Preserve existing data when editing
+                rooms[roomNum].num_penetrations = pen;
+                rooms[roomNum].floor = floor;
+                rooms[roomNum].wing = wing;
+                showToast(`Room ${roomNum} updated!`);
+            } else {
+                rooms[roomNum] = {
+                    num_penetrations: pen,
+                    floor: floor,
+                    wing: wing,
+                    captured: {},
+                    comments: {}
+                };
+                showToast(`Room ${roomNum} created!`);
+            }
             
             saveState();
-            showToast(`Room ${roomNum} created!`);
             showCapture(roomNum);
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // EDIT MODAL
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function editRoom() {
+            const room = rooms[currentRoom];
+            if (!room) return;
+            
+            document.getElementById('editRoomNum').textContent = currentRoom;
+            document.getElementById('editFloorSelect').value = room.floor || '';
+            document.getElementById('editWingSelect').value = room.wing || '';
+            
+            document.querySelectorAll('#editPenPicker button').forEach(btn => {
+                btn.classList.toggle('selected', parseInt(btn.dataset.val) === room.num_penetrations);
+                btn.onclick = () => {
+                    document.querySelectorAll('#editPenPicker button').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                };
+            });
+            
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+        
+        function closeEditModal(event) {
+            if (event.target.id === 'editModal') {
+                document.getElementById('editModal').classList.add('hidden');
+            }
+        }
+        
+        function saveEditRoom() {
+            const room = rooms[currentRoom];
+            if (!room) return;
+            
+            const newPen = parseInt(document.querySelector('#editPenPicker button.selected')?.dataset.val || room.num_penetrations);
+            room.num_penetrations = newPen;
+            room.floor = document.getElementById('editFloorSelect').value;
+            room.wing = document.getElementById('editWingSelect').value;
+            
+            saveState();
+            document.getElementById('editModal').classList.add('hidden');
+            renderCapture();
+            showToast('Room updated!');
         }
         
         // ═══════════════════════════════════════════════════════════════════
@@ -757,25 +646,23 @@
         
         function renderCapture() {
             const room = rooms[currentRoom];
-            if (!room) {
-                showHome();
-                return;
-            }
+            if (!room) { showHome(); return; }
+            
+            // Initialize comments object if missing
+            if (!room.comments) room.comments = {};
             
             document.getElementById('captureRoomNum').textContent = currentRoom;
-            document.getElementById('captureRoomMeta').textContent = `${room.floor} • ${room.wing} • ${room.num_penetrations} penetration(s)`;
+            document.getElementById('captureRoomMeta').textContent = 
+                `${room.floor} • ${room.wing} • ${room.num_penetrations} penetration(s)`;
             
             // Update stage tabs
-            const stages = ['before', 'after', 'patch'];
-            stages.forEach(stage => {
+            ['before', 'after', 'patch'].forEach(stage => {
                 const tab = document.querySelector(`.stage-tab[data-stage="${stage}"]`);
                 const countEl = document.getElementById(`${stage}Count`);
-                
-                const needed = room.num_penetrations * 2 * 2; // pens * cuts * photos
+                const needed = room.num_penetrations * 2 * 2;
                 const captured = countCaptured(room, stage);
                 
                 countEl.textContent = `${captured}/${needed}`;
-                
                 tab.classList.toggle('active', stage === currentStage);
                 tab.classList.toggle('complete', captured >= needed && stage !== currentStage);
             });
@@ -787,6 +674,7 @@
             for (let pen = 1; pen <= room.num_penetrations; pen++) {
                 const penCaptured = countCapturedPen(room, pen, currentStage);
                 const penNeeded = 4;
+                const comment = room.comments[pen] || '';
                 
                 const section = document.createElement('div');
                 section.className = 'penetration-section';
@@ -796,6 +684,13 @@
                         <span class="penetration-status ${penCaptured >= penNeeded ? 'complete' : ''}">
                             ${penCaptured >= penNeeded ? '✓ Complete' : `${penCaptured}/${penNeeded}`}
                         </span>
+                    </div>
+                    <div class="penetration-comment">
+                        <textarea 
+                            placeholder="Notes for penetration ${pen} (e.g., pipe size, issues, special conditions...)"
+                            onchange="saveComment(${pen}, this.value)"
+                            onblur="saveComment(${pen}, this.value)"
+                        >${comment}</textarea>
                     </div>
                     <div class="cuts-row">
                         ${renderCut(pen, 'A', 'Room Side')}
@@ -829,6 +724,14 @@
             `;
         }
         
+        function saveComment(pen, value) {
+            const room = rooms[currentRoom];
+            if (!room) return;
+            if (!room.comments) room.comments = {};
+            room.comments[pen] = value;
+            saveState();
+        }
+        
         function countCaptured(room, stage) {
             return Object.keys(room.captured || {}).filter(k => k.startsWith(`${stage}_`)).length;
         }
@@ -845,23 +748,16 @@
         function markCaptured(pen, cut, slot, stage) {
             const room = rooms[currentRoom];
             if (!room.captured) room.captured = {};
-            const key = `${stage}_${pen}_${cut}_${slot}`;
-            room.captured[key] = true;
+            room.captured[`${stage}_${pen}_${cut}_${slot}`] = true;
             saveState();
         }
         
         // ═══════════════════════════════════════════════════════════════════
-        // PHOTO CAPTURE & SAVE
+        // PHOTO CAPTURE
         // ═══════════════════════════════════════════════════════════════════
         
         function takePhoto(pen, cut, slot) {
-            pendingPhoto = {
-                room: currentRoom,
-                pen: pen,
-                cut: cut,
-                slot: slot,
-                stage: currentStage
-            };
+            pendingPhoto = { room: currentRoom, pen, cut, slot, stage: currentStage };
             document.getElementById('photoInput').click();
         }
         
@@ -870,24 +766,14 @@
             
             const file = e.target.files[0];
             const { room, pen, cut, slot, stage } = pendingPhoto;
-            
-            // Generate descriptive filename
             const filename = `${room}_pen${pen}_cut${cut}_${stage}_${slot}.jpg`;
             
-            // Compress and convert to blob
             const blob = await compressImage(file);
-            
-            // Trigger save dialog
             saveFile(blob, filename);
-            
-            // Mark as captured in our tracking
             markCaptured(pen, cut, slot, stage);
             
-            // Reset
             e.target.value = '';
             pendingPhoto = null;
-            
-            // Update UI
             renderCapture();
             showToast(`Saved: ${filename}`);
         });
@@ -899,10 +785,8 @@
                 const img = new Image();
                 
                 img.onload = () => {
-                    // Max 1500px on longest side
                     const maxDim = 1500;
-                    let width = img.width;
-                    let height = img.height;
+                    let width = img.width, height = img.height;
                     
                     if (width > maxDim || height > maxDim) {
                         if (width > height) {
@@ -917,7 +801,6 @@
                     canvas.width = width;
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
-                    
                     canvas.toBlob(resolve, 'image/jpeg', 0.85);
                 };
                 
@@ -926,7 +809,6 @@
         }
         
         function saveFile(blob, filename) {
-            // Create download link - this triggers save dialog on iOS Safari
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -934,9 +816,36 @@
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            
-            // Clean up after a delay
             setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // EXPORT NOTES
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function exportNotes() {
+            const room = rooms[currentRoom];
+            if (!room) return;
+            
+            const notes = {
+                room_number: currentRoom,
+                floor: room.floor,
+                wing: room.wing,
+                num_penetrations: room.num_penetrations,
+                exported_at: new Date().toISOString(),
+                penetration_comments: {}
+            };
+            
+            for (let pen = 1; pen <= room.num_penetrations; pen++) {
+                notes.penetration_comments[pen] = room.comments?.[pen] || '';
+            }
+            
+            const json = JSON.stringify(notes, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const filename = `${currentRoom}_notes.json`;
+            
+            saveFile(blob, filename);
+            showToast(`Exported: ${filename}`);
         }
         
         // ═══════════════════════════════════════════════════════════════════
@@ -944,7 +853,7 @@
         // ═══════════════════════════════════════════════════════════════════
         
         function confirmDelete() {
-            if (confirm(`Delete Room ${currentRoom}?\n\nThis only removes tracking data. Photos already saved to Files are safe.`)) {
+            if (confirm(`Delete Room ${currentRoom}?\n\nThis removes tracking data and comments. Photos already saved are safe.`)) {
                 delete rooms[currentRoom];
                 saveState();
                 showToast(`Room ${currentRoom} deleted`);
