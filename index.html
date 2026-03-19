@@ -6,13 +6,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="NCCS">
-    <title>NCCS Fire Caulk — Photo Capture</title>
-    
+    <title>NCCS Fire Caulk — Unified Capture</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --nccs-dark: #1a1a2e;
             --nccs-accent: #e94560;
-            --nccs-teal: #0f3460;
+            --nccs-teal: #008B8B;
             --gray-100: #f7f7f7;
             --gray-200: #e8e8e8;
             --gray-300: #d1d1d1;
@@ -20,425 +20,617 @@
             --gray-700: #444;
             --success: #27ae60;
             --warning: #f39c12;
+            --skip: #9b59b6;
         }
-        
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background: var(--gray-100);
             color: var(--gray-700);
             min-height: 100vh;
-            padding-bottom: 100px;
+            overflow-x: hidden;
         }
+        .hidden { display: none !important; }
         
+        /* Header */
         .header {
             background: var(--nccs-dark);
             color: white;
-            padding: 16px 20px;
-            padding-top: max(16px, env(safe-area-inset-top));
+            padding: 12px 16px;
+            padding-top: max(12px, env(safe-area-inset-top));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
         }
+        .header h1 { margin: 0; font-size: 16px; font-weight: 600; }
+        .header-subtitle { font-size: 11px; opacity: 0.7; }
+        .header-right { display: flex; gap: 8px; }
         
-        .header h1 { margin: 0; font-size: 18px; font-weight: 600; }
-        .header-subtitle { font-size: 12px; opacity: 0.7; margin-top: 2px; }
-        
-        .container { padding: 20px; max-width: 600px; margin: 0 auto; }
-        
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-        
-        .card h2 { margin: 0 0 16px 0; font-size: 18px; color: var(--nccs-teal); }
-        
-        .form-group { margin-bottom: 20px; }
-        .form-group label {
-            display: block; font-size: 14px; font-weight: 600;
-            color: var(--gray-700); margin-bottom: 8px;
-        }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%; padding: 14px 16px; font-size: 16px;
-            border: 2px solid var(--gray-200); border-radius: 12px;
-            background: white; -webkit-appearance: none;
-            font-family: inherit;
-        }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none; border-color: var(--nccs-accent);
-        }
-        
-        .number-picker { display: flex; gap: 8px; flex-wrap: wrap; }
-        .number-picker button {
-            width: 52px; height: 52px;
-            border: 2px solid var(--gray-200); background: white;
-            border-radius: 12px; font-size: 20px; font-weight: 600; cursor: pointer;
-        }
-        .number-picker button.selected {
-            border-color: var(--nccs-accent); background: var(--nccs-accent); color: white;
-        }
-        .number-picker button:active { transform: scale(0.95); }
-        
+        /* Buttons */
         .btn {
-            width: 100%; padding: 16px; font-size: 18px; font-weight: 600;
-            border: none; border-radius: 12px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
         .btn-primary { background: var(--nccs-accent); color: white; }
-        .btn-success { background: var(--success); color: white; }
         .btn-secondary { background: var(--gray-200); color: var(--gray-700); }
-        .btn-small { width: auto; padding: 10px 16px; font-size: 14px; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-teal { background: var(--nccs-teal); color: white; }
+        .btn-small { padding: 6px 10px; font-size: 12px; }
         .btn:active { opacity: 0.9; transform: scale(0.98); }
-        .btn:disabled { background: var(--gray-300); cursor: not-allowed; transform: none; }
         
-        .room-item {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px; background: var(--gray-100); border-radius: 12px;
-            margin-bottom: 8px; cursor: pointer;
-        }
-        .room-item:active { background: var(--gray-200); }
-        .room-item h4 { margin: 0; font-size: 18px; }
-        .room-item p { margin: 4px 0 0 0; font-size: 13px; color: var(--gray-500); }
-        .room-item .progress { text-align: right; }
-        .room-item .progress-pct { font-size: 20px; font-weight: 700; color: var(--nccs-teal); }
-        .room-item .progress-pct.complete { color: var(--success); }
-        
-        .stage-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-        .stage-tab {
-            flex: 1; padding: 14px 8px;
-            border: 2px solid var(--gray-200); background: white;
-            border-radius: 10px; font-size: 14px; font-weight: 600;
-            color: var(--gray-500); cursor: pointer; text-align: center;
-        }
-        .stage-tab.active { border-color: var(--nccs-teal); background: var(--nccs-teal); color: white; }
-        .stage-tab.complete { border-color: var(--success); background: var(--success); color: white; }
-        .stage-tab .count { display: block; font-size: 11px; font-weight: 400; margin-top: 2px; opacity: 0.8; }
-        
-        .penetration-section { margin-bottom: 24px; }
-        .penetration-header {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 8px; padding-bottom: 8px; border-bottom: 2px solid var(--gray-200);
-        }
-        .penetration-header h3 { margin: 0; font-size: 16px; color: var(--nccs-teal); }
-        .penetration-status { font-size: 13px; font-weight: 600; }
-        .penetration-status.complete { color: var(--success); }
-        
-        .penetration-comment {
+        /* Home Screen */
+        .container { padding: 16px; max-width: 800px; margin: 0 auto; }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
             margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
-        .penetration-comment textarea {
-            width: 100%; padding: 10px 12px; font-size: 14px;
-            border: 2px solid var(--gray-200); border-radius: 8px;
-            background: white; resize: none; min-height: 60px;
-            font-family: inherit;
+        .card h2 { margin: 0 0 12px 0; font-size: 16px; color: var(--nccs-teal); }
+        .form-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        .form-group { flex: 1; min-width: 120px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            background: white;
         }
-        .penetration-comment textarea:focus {
-            outline: none; border-color: var(--nccs-teal);
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--nccs-teal);
         }
-        .penetration-comment textarea::placeholder {
+        
+        /* Unit List */
+        .unit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--gray-100);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            cursor: pointer;
+        }
+        .unit-item:hover { background: var(--gray-200); }
+        .unit-item h4 { margin: 0; font-size: 15px; }
+        .unit-item p { margin: 2px 0 0; font-size: 11px; color: var(--gray-500); }
+        .unit-progress { text-align: right; }
+        .unit-progress .pct { font-size: 18px; font-weight: 700; color: var(--nccs-teal); }
+        .unit-progress .pct.complete { color: var(--success); }
+        
+        /* Drawing Screen */
+        .drawing-screen {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .drawing-toolbar {
+            background: var(--nccs-dark);
+            padding: 8px 12px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .drawing-toolbar select {
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: none;
+            font-size: 13px;
+        }
+        .drawing-canvas-wrap {
+            flex: 1;
+            min-width: 0;
+            overflow: auto;
+            background: #222;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+        .drawing-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        #drawingWrapper {
+            position: relative;
+            display: inline-block;
+            transform-origin: 0 0;
+            margin: 0;
+            padding: 0;
+        }
+        #drawingImage {
+            display: block;
+            max-width: none;
+            max-height: none;
+        }
+        
+        /* Penetration Markers on Drawing */
+        .pen-marker {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.15s;
+        }
+        .pen-marker.unmarked {
+            background: var(--gray-500);
+            border: 2px dashed white;
+        }
+        .pen-marker.marked {
+            background: var(--nccs-accent);
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+        .pen-marker.partial {
+            background: var(--warning);
+            border: 2px solid white;
+        }
+        .pen-marker.complete {
+            background: var(--success);
+            border: 2px solid white;
+        }
+        .pen-marker.skipped {
+            background: var(--skip);
+            border: 2px dashed white;
+            opacity: 0.7;
+        }
+        .pen-marker:hover { transform: translate(-50%, -50%) scale(1.15); }
+        .pen-marker.placing { 
+            background: var(--nccs-teal);
+            animation: pulse 0.5s infinite alternate;
+        }
+        @keyframes pulse { from { transform: translate(-50%, -50%) scale(1); } to { transform: translate(-50%, -50%) scale(1.2); } }
+        
+        /* Mode indicator */
+        .mode-banner {
+            background: var(--nccs-teal);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .mode-banner.placing { background: var(--nccs-accent); }
+        
+        /* Zoom controls */
+        .zoom-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 4px;
+            background: var(--nccs-dark);
+            padding: 6px;
+            border-radius: 8px;
+            z-index: 50;
+        }
+        .zoom-controls button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--gray-700);
+            color: white;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .zoom-controls button:hover { background: var(--gray-500); }
+        .zoom-level {
+            padding: 0 10px;
+            display: flex;
+            align-items: center;
+            color: white;
+            font-size: 13px;
+        }
+        
+        /* Photo Capture Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            border-radius: 16px 16px 0 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-header {
+            background: var(--nccs-dark);
+            color: white;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 { margin: 0; font-size: 16px; }
+        .modal-body { padding: 16px; overflow-y: auto; flex: 1; }
+        
+        /* Stage tabs in modal */
+        .stage-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+        .stage-tab {
+            flex: 1;
+            padding: 10px 6px;
+            border: 2px solid var(--gray-200);
+            background: white;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-500);
+            cursor: pointer;
+            text-align: center;
+        }
+        .stage-tab.active {
+            border-color: var(--nccs-teal);
+            color: var(--nccs-teal);
+            background: rgba(0,139,139,0.1);
+        }
+        .stage-tab.complete { border-color: var(--success); color: var(--success); }
+        
+        /* Cut cards */
+        .cuts-row { display: flex; gap: 10px; }
+        .cut-card {
+            flex: 1;
+            background: var(--gray-100);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+        .cut-card h4 { margin: 0 0 4px; font-size: 14px; }
+        .cut-label { font-size: 10px; color: var(--gray-500); margin-bottom: 10px; }
+        .photo-buttons { display: flex; gap: 6px; }
+        .photo-btn {
+            flex: 1;
+            padding: 12px 8px;
+            border: 2px dashed var(--gray-300);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
             color: var(--gray-500);
         }
-        
-        .cuts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .cut-card { background: var(--gray-100); border-radius: 12px; padding: 14px; }
-        .cut-card h4 { margin: 0 0 4px 0; font-size: 14px; font-weight: 600; }
-        .cut-card .cut-label { font-size: 12px; color: var(--gray-500); margin-bottom: 12px; }
-        
-        .photo-buttons { display: flex; gap: 8px; }
-        .photo-btn {
-            flex: 1; aspect-ratio: 1;
-            border: 3px dashed var(--gray-300); background: white;
-            border-radius: 12px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; cursor: pointer;
-            font-size: 12px; color: var(--gray-500); gap: 4px; min-height: 70px;
+        .photo-btn .icon { font-size: 20px; }
+        .photo-btn.captured {
+            border: 2px solid var(--success);
+            background: rgba(39,174,96,0.1);
+            color: var(--success);
         }
-        .photo-btn .icon { font-size: 24px; }
-        .photo-btn.captured { border: 3px solid var(--success); background: #e8f5e9; color: var(--success); }
-        .photo-btn:active { transform: scale(0.95); }
+        .photo-btn:active { transform: scale(0.97); }
         
-        .instructions {
-            background: #fff8e1; border: 1px solid #ffc107;
-            border-radius: 12px; padding: 16px; margin-bottom: 20px;
+        /* Comment section */
+        .comment-section { margin-top: 16px; }
+        .comment-section label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+        .comment-section textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 60px;
         }
-        .instructions h4 { margin: 0 0 8px 0; color: #f57f17; font-size: 14px; }
-        .instructions p { margin: 0; font-size: 13px; color: #795548; line-height: 1.5; }
         
-        .hidden { display: none !important; }
-        #photoInput { display: none; }
-        
+        /* Toast */
         .toast {
-            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
-            background: var(--gray-700); color: white; padding: 12px 24px;
-            border-radius: 25px; font-size: 14px; z-index: 300;
-            opacity: 0; transition: opacity 0.3s; text-align: center; max-width: 90%;
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--nccs-dark);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 300;
+            opacity: 0;
+            transition: all 0.3s;
         }
-        .toast.visible { opacity: 1; }
+        .toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
         
-        .back-btn {
-            background: none; border: none; color: var(--nccs-accent);
-            font-size: 16px; padding: 8px 0; cursor: pointer;
-            display: flex; align-items: center; gap: 4px; margin-bottom: 12px;
+        /* Sidebar stats (desktop) */
+        @media (min-width: 768px) {
+            .drawing-screen { flex-direction: column; }
+            .drawing-main {
+                display: flex;
+                flex: 1;
+                overflow: hidden;
+            }
+            .drawing-sidebar {
+                width: 260px;
+                min-width: 260px;
+                max-width: 260px;
+                flex-shrink: 0;
+                background: #252540;
+                padding: 16px;
+                overflow-y: auto;
+                color: white;
+                order: 2;
+            }
+            .drawing-canvas-wrap {
+                order: 1;
+            }
+            .drawing-sidebar h3 { font-size: 12px; color: var(--nccs-teal); text-transform: uppercase; margin-bottom: 10px; }
+            .pen-list-item {
+                display: flex;
+                justify-content: space-between;
+                padding: 8px;
+                background: var(--nccs-dark);
+                margin-bottom: 4px;
+                border-radius: 4px;
+                font-size: 12px;
+                cursor: pointer;
+            }
+            .pen-list-item:hover { background: #2a2a4e; }
+            .pen-list-item .status { font-size: 10px; }
+            .pen-list-item .status.complete { color: var(--success); }
+            .pen-list-item .status.partial { color: var(--warning); }
+            .pen-list-item .status.skipped { color: var(--skip); }
+        }
+        @media (max-width: 767px) {
+            .drawing-sidebar { display: none; }
         }
         
-        .empty-state { text-align: center; padding: 40px 20px; color: var(--gray-500); }
-        .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
-        
-        .safety-banner {
-            background: #e8f5e9; border: 1px solid var(--success);
-            border-radius: 12px; padding: 14px 16px; margin-bottom: 20px;
-            display: flex; align-items: flex-start; gap: 12px;
-        }
-        .safety-banner .icon { font-size: 24px; flex-shrink: 0; }
-        .safety-banner p { margin: 0; font-size: 13px; color: #2e7d32; line-height: 1.4; }
-        
-        .action-row {
-            display: flex; gap: 8px; margin-top: 16px;
-        }
-        .action-row .btn { flex: 1; }
-        
-        .edit-btn {
-            background: none; border: none; color: var(--nccs-teal);
-            font-size: 14px; padding: 8px; cursor: pointer;
-        }
-        
-        .delete-btn {
-            background: none; border: none; color: #c0392b;
-            font-size: 14px; padding: 8px; cursor: pointer;
-        }
-        
-        .room-header-row {
-            display: flex; justify-content: space-between; align-items: start;
-        }
-        
-        .room-actions { display: flex; gap: 4px; }
-        
-        /* Modal */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5); z-index: 200;
-            display: flex; align-items: center; justify-content: center;
+        /* No image state */
+        .no-drawing {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #666;
             padding: 20px;
+            text-align: center;
         }
-        .modal {
-            background: white; border-radius: 16px; padding: 24px;
-            width: 100%; max-width: 400px;
-        }
-        .modal h3 { margin: 0 0 16px 0; font-size: 18px; color: var(--nccs-teal); }
+        .no-drawing p { margin-bottom: 12px; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>NCCS Fire Caulk Capture</h1>
-        <div class="header-subtitle">Montage Big Sky • Firestop Remediation</div>
-    </div>
+    <input type="file" id="photoInput" accept="image/*" capture="environment" class="hidden">
+    <input type="file" id="drawingInput" accept="image/*,.pdf" class="hidden">
+    <input type="file" id="importInput" accept=".json" class="hidden">
     
-    <div class="container">
-        <!-- HOME SCREEN -->
-        <div id="homeScreen">
-            <div class="safety-banner">
-                <span class="icon">✓</span>
-                <p><strong>Crash-proof:</strong> Photos save directly to Files. Comments export as a separate notes file.</p>
+    <!-- HOME SCREEN -->
+    <div id="homeScreen">
+        <div class="header">
+            <div>
+                <h1>🔧 NCCS Fire Caulk</h1>
+                <div class="header-subtitle">Montage Residences</div>
             </div>
-            
-            <div class="card">
-                <h2>📁 Your Rooms</h2>
-                <div id="roomList"></div>
-                <div id="emptyState" class="empty-state hidden">
-                    <div class="icon">📷</div>
-                    <p>No rooms yet.<br>Tap below to add one.</p>
-                </div>
-            </div>
-            
-            <button class="btn btn-primary" onclick="showSetup()">➕ New Room</button>
-        </div>
-        
-        <!-- SETUP SCREEN -->
-        <div id="setupScreen" class="hidden">
-            <button class="back-btn" onclick="showHome()">← Back</button>
-            
-            <div class="card">
-                <h2 id="setupTitle">New Room Setup</h2>
-                
-                <div class="form-group">
-                    <label>Room Number</label>
-                    <input type="number" id="roomNumberInput" placeholder="1301" inputmode="numeric">
-                </div>
-                
-                <div class="form-group">
-                    <label>Number of Penetrations</label>
-                    <div class="number-picker" id="penPicker">
-                        <button data-val="1">1</button>
-                        <button data-val="2">2</button>
-                        <button data-val="3">3</button>
-                        <button data-val="4">4</button>
-                        <button data-val="5">5</button>
-                        <button data-val="6">6</button>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Floor</label>
-                    <select id="floorSelect">
-                        <option value="">Select...</option>
-                        <option>Floor 1</option>
-                        <option>Floor 2</option>
-                        <option>Floor 3</option>
-                        <option>Floor 4</option>
-                        <option>Floor 5</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Wing / Building</label>
-                    <select id="wingSelect">
-                        <option value="">Select...</option>
-                        <option>Lodge</option>
-                        <option>Inn</option>
-                        <option>Mountain Homes</option>
-                    </select>
-                </div>
-                
-                <button class="btn btn-primary" id="createRoomBtn" onclick="saveRoom()" disabled>
-                    Create Room
-                </button>
+            <div class="header-right">
+                <button class="btn btn-small btn-secondary" onclick="exportAll()">📤 Export</button>
+                <button class="btn btn-small btn-secondary" onclick="document.getElementById('importInput').click()">📥 Import</button>
             </div>
         </div>
         
-        <!-- CAPTURE SCREEN -->
-        <div id="captureScreen" class="hidden">
-            <button class="back-btn" onclick="showHome()">← All Rooms</button>
+        <div class="container">
+            <div class="card">
+                <h2>➕ New Unit</h2>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Unit / Condo #</label>
+                        <input type="text" id="unitInput" placeholder="1505 or 23">
+                    </div>
+                    <div class="form-group">
+                        <label># Penetrations</label>
+                        <input type="number" id="penCountInput" placeholder="32" min="1" max="100" inputmode="numeric">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Level</label>
+                        <select id="levelSelect">
+                            <option value="">Select...</option>
+                            <option value="L1">Level 1</option>
+                            <option value="L2">Level 2</option>
+                            <option value="L3">Level 3</option>
+                            <option value="L4">Level 4</option>
+                            <option value="L5">Level 5</option>
+                            <option value="L6">Level 6</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Drawing Areas</label>
+                        <input type="text" id="areasInput" placeholder="2,4" title="Comma-separated area numbers">
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="createUnit()">Create Unit</button>
+            </div>
             
             <div class="card">
-                <div class="room-header-row">
-                    <div>
-                        <h2 style="margin-bottom:4px;">Room <span id="captureRoomNum"></span></h2>
-                        <p style="margin:0;font-size:13px;color:var(--gray-500);" id="captureRoomMeta"></p>
-                    </div>
-                    <div class="room-actions">
-                        <button class="edit-btn" onclick="editRoom()">✏️ Edit</button>
-                        <button class="delete-btn" onclick="confirmDelete()">🗑️</button>
-                    </div>
+                <h2>📋 Units</h2>
+                <div id="unitList"></div>
+                <div id="emptyState" class="hidden" style="text-align: center; padding: 30px; color: var(--gray-500);">
+                    <p>No units yet. Create one above.</p>
                 </div>
-            </div>
-            
-            <div class="instructions">
-                <h4>📱 Workflow</h4>
-                <p>1. Take photos → Save to Files<br>
-                   2. Add comments per penetration<br>
-                   3. Tap "Export Notes" when done</p>
-            </div>
-            
-            <div class="stage-tabs" id="stageTabs">
-                <button class="stage-tab active" data-stage="before" onclick="setStage('before')">
-                    BEFORE<span class="count" id="beforeCount">0/0</span>
-                </button>
-                <button class="stage-tab" data-stage="after" onclick="setStage('after')">
-                    AFTER<span class="count" id="afterCount">0/0</span>
-                </button>
-                <button class="stage-tab" data-stage="patch" onclick="setStage('patch')">
-                    PATCH<span class="count" id="patchCount">0/0</span>
-                </button>
-            </div>
-            
-            <div id="penetrationsContainer"></div>
-            
-            <div class="action-row">
-                <button class="btn btn-success" onclick="exportNotes()">
-                    📄 Export Notes
-                </button>
             </div>
         </div>
     </div>
     
-    <!-- Edit Penetrations Modal -->
-    <div id="editModal" class="modal-overlay hidden" onclick="closeEditModal(event)">
-        <div class="modal" onclick="event.stopPropagation()">
-            <h3>Edit Room <span id="editRoomNum"></span></h3>
-            
-            <div class="form-group">
-                <label>Number of Penetrations</label>
-                <div class="number-picker" id="editPenPicker">
-                    <button data-val="1">1</button>
-                    <button data-val="2">2</button>
-                    <button data-val="3">3</button>
-                    <button data-val="4">4</button>
-                    <button data-val="5">5</button>
-                    <button data-val="6">6</button>
+    <!-- DRAWING SCREEN -->
+    <div id="drawingScreen" class="drawing-screen hidden">
+        <div class="header">
+            <div>
+                <h1 id="drawingTitle">Unit 1505</h1>
+                <div class="header-subtitle" id="drawingSubtitle">32 penetrations • Level 5</div>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-small btn-secondary" onclick="showHome()">← Back</button>
+                <button class="btn btn-small btn-secondary" onclick="editUnit()">✏️ Edit</button>
+                <button class="btn btn-small btn-teal" onclick="togglePlaceMode()">📍 Place</button>
+            </div>
+        </div>
+        
+        <div class="drawing-toolbar">
+            <select id="areaSelect" onchange="loadArea()">
+                <option value="">Select Area...</option>
+            </select>
+            <button class="btn btn-small btn-secondary" onclick="document.getElementById('drawingInput').click()">📁 Load Image</button>
+            <button class="btn btn-small btn-success" onclick="addPenetrations()">➕ Add Pens</button>
+            <span style="color: white; font-size: 12px; margin-left: auto;" id="areaStatus">No drawing loaded</span>
+        </div>
+        
+        <div id="modeBanner" class="mode-banner hidden">Click on drawing to place Pen #<span id="nextPenNum">1</span></div>
+        
+        <div class="drawing-main">
+            <div class="drawing-canvas-wrap" id="canvasWrap">
+                <div id="noDrawing" class="no-drawing">
+                    <p>Select an area and load a drawing image</p>
+                    <button class="btn btn-teal" onclick="document.getElementById('drawingInput').click()">📁 Load Image</button>
+                </div>
+                <div id="drawingWrapper" style="display: none;">
+                    <img id="drawingImage" onclick="handleDrawingClick(event)">
                 </div>
             </div>
             
-            <div class="form-group">
-                <label>Floor</label>
-                <select id="editFloorSelect">
-                    <option value="">Select...</option>
-                    <option>Floor 1</option>
-                    <option>Floor 2</option>
-                    <option>Floor 3</option>
-                    <option>Floor 4</option>
-                    <option>Floor 5</option>
-                </select>
+            <div class="drawing-sidebar" id="drawingSidebar">
+                <h3>Penetrations</h3>
+                <div id="penList"></div>
             </div>
-            
-            <div class="form-group">
-                <label>Wing / Building</label>
-                <select id="editWingSelect">
-                    <option value="">Select...</option>
-                    <option>Lodge</option>
-                    <option>Inn</option>
-                    <option>Mountain Homes</option>
-                </select>
-            </div>
-            
-            <button class="btn btn-primary" onclick="saveEditRoom()">Save Changes</button>
+        </div>
+        
+        <div class="zoom-controls">
+            <button onclick="zoomOut()">−</button>
+            <span class="zoom-level"><span id="zoomLevel">100</span>%</span>
+            <button onclick="zoomIn()">+</button>
+            <button onclick="resetZoom()">⟲</button>
         </div>
     </div>
     
-    <input type="file" id="photoInput" accept="image/*" capture="environment">
-    <div class="toast" id="toast"></div>
+    <!-- PHOTO CAPTURE MODAL -->
+    <div id="captureModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="capturePenTitle">Penetration 1</h3>
+                <button class="btn btn-small btn-secondary" onclick="closeCapture()">✕ Close</button>
+            </div>
+            <div class="modal-body">
+                <div class="stage-tabs">
+                    <div class="stage-tab" data-stage="before" onclick="setStage('before')">
+                        <div>Before</div>
+                        <div id="beforeCount" style="font-size: 10px;">0/4</div>
+                    </div>
+                    <div class="stage-tab" data-stage="after" onclick="setStage('after')">
+                        <div>After</div>
+                        <div id="afterCount" style="font-size: 10px;">0/4</div>
+                    </div>
+                    <div class="stage-tab" data-stage="patch" onclick="setStage('patch')">
+                        <div>Patch</div>
+                        <div id="patchCount" style="font-size: 10px;">0/4</div>
+                    </div>
+                </div>
+                
+                <div class="cuts-row" id="cutsContainer"></div>
+                
+                <div class="comment-section">
+                    <label>Notes for this penetration</label>
+                    <textarea id="penComment" placeholder="Pipe size, issues, etc..." onchange="saveComment()"></textarea>
+                </div>
+                
+                <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--gray-200);">
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn btn-small" style="background: var(--skip); color: white;" onclick="toggleSkip()" id="skipBtn">
+                            ⏭ Mark as Exploratory/Skip
+                        </button>
+                        <button class="btn btn-small btn-secondary" onclick="relocatePen()">
+                            📍 Relocate on Drawing
+                        </button>
+                        <button class="btn btn-small" style="background: #c0392b; color: white;" onclick="deletePen()">
+                            🗑 Delete Penetration
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="toast" class="toast"></div>
     
     <script>
         // ═══════════════════════════════════════════════════════════════════
         // STATE
         // ═══════════════════════════════════════════════════════════════════
         
-        let rooms = {};
-        // Structure: { roomNum: { 
-        //   num_penetrations, floor, wing, 
-        //   captured: {stage_pen_cut_slot: true},
-        //   comments: {pen: "comment text"}
-        // }}
+        let units = {};
+        // units[id] = {
+        //   unit_number, num_penetrations, level, areas: [2,4],
+        //   penetrations: { 1: { area: 'L5-2', x: 0.5, y: 0.3, comment: '', captured: {}, status: 'active'|'skip' }, ... },
+        //   drawings: { 'L5-2': 'data:image/...', ... }
+        // }
         
-        let currentRoom = null;
+        let currentUnit = null;
+        let currentArea = null;
+        let currentPen = null;
         let currentStage = 'before';
+        let placeMode = false;
+        let relocateMode = false;
+        let zoom = 1;
         let pendingPhoto = null;
-        let editMode = false;
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // PERSISTENCE
+        // ═══════════════════════════════════════════════════════════════════
         
         function loadState() {
             try {
-                const saved = localStorage.getItem('nccs_rooms_v3');
-                if (saved) {
-                    rooms = JSON.parse(saved);
-                }
+                const saved = localStorage.getItem('nccs_residences_v1');
+                if (saved) units = JSON.parse(saved);
             } catch (e) {
-                console.error('Failed to load state:', e);
-                rooms = {};
+                console.error('Load failed:', e);
+                units = {};
             }
         }
         
         function saveState() {
             try {
-                localStorage.setItem('nccs_rooms_v3', JSON.stringify(rooms));
+                localStorage.setItem('nccs_residences_v1', JSON.stringify(units));
             } catch (e) {
-                console.error('Failed to save state:', e);
+                console.error('Save failed:', e);
             }
         }
         
@@ -448,316 +640,546 @@
         
         function showHome() {
             document.getElementById('homeScreen').classList.remove('hidden');
-            document.getElementById('setupScreen').classList.add('hidden');
-            document.getElementById('captureScreen').classList.add('hidden');
-            editMode = false;
-            renderRoomList();
+            document.getElementById('drawingScreen').classList.add('hidden');
+            currentUnit = null;
+            currentArea = null;
+            placeMode = false;
+            renderUnitList();
         }
         
-        function showSetup(roomNum = null) {
-            editMode = !!roomNum;
+        function showDrawing(unitId) {
+            currentUnit = unitId;
+            const unit = units[unitId];
             
             document.getElementById('homeScreen').classList.add('hidden');
-            document.getElementById('setupScreen').classList.remove('hidden');
-            document.getElementById('captureScreen').classList.add('hidden');
+            document.getElementById('drawingScreen').classList.remove('hidden');
             
-            document.getElementById('setupTitle').textContent = editMode ? 'Edit Room' : 'New Room Setup';
-            document.getElementById('createRoomBtn').textContent = editMode ? 'Save Changes' : 'Create Room';
+            document.getElementById('drawingTitle').textContent = `Unit ${unit.unit_number}`;
+            document.getElementById('drawingSubtitle').textContent = 
+                `${unit.num_penetrations} penetrations • ${unit.level}`;
             
-            if (editMode && rooms[roomNum]) {
-                const room = rooms[roomNum];
-                document.getElementById('roomNumberInput').value = roomNum;
-                document.getElementById('roomNumberInput').disabled = true;
-                document.getElementById('floorSelect').value = room.floor || '';
-                document.getElementById('wingSelect').value = room.wing || '';
-                
-                document.querySelectorAll('#penPicker button').forEach(b => {
-                    b.classList.toggle('selected', parseInt(b.dataset.val) === room.num_penetrations);
-                });
-                document.getElementById('createRoomBtn').disabled = false;
+            // Populate area dropdown
+            const areaSelect = document.getElementById('areaSelect');
+            areaSelect.innerHTML = '<option value="">Select Area...</option>';
+            unit.areas.forEach(a => {
+                const key = `${unit.level}-${a}`;
+                areaSelect.innerHTML += `<option value="${key}">Area ${a}</option>`;
+            });
+            
+            currentArea = null;
+            placeMode = false;
+            updateModeUI();
+            renderPenList();
+            
+            // Load first area if available
+            if (unit.areas.length > 0) {
+                areaSelect.value = `${unit.level}-${unit.areas[0]}`;
+                loadArea();
             } else {
-                document.getElementById('roomNumberInput').value = '';
-                document.getElementById('roomNumberInput').disabled = false;
-                document.getElementById('floorSelect').value = '';
-                document.getElementById('wingSelect').value = '';
-                document.querySelectorAll('#penPicker button').forEach(b => b.classList.remove('selected'));
-                document.getElementById('createRoomBtn').disabled = true;
+                document.getElementById('noDrawing').style.display = 'flex';
+                document.getElementById('drawingWrapper').style.display = 'none';
             }
         }
         
-        function showCapture(roomNum) {
-            currentRoom = roomNum;
-            currentStage = 'before';
+        // ═══════════════════════════════════════════════════════════════════
+        // UNIT MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function createUnit() {
+            const unitNum = document.getElementById('unitInput').value.trim();
+            const penCount = parseInt(document.getElementById('penCountInput').value) || 0;
+            const level = document.getElementById('levelSelect').value;
+            const areasStr = document.getElementById('areasInput').value.trim();
             
-            document.getElementById('homeScreen').classList.add('hidden');
-            document.getElementById('setupScreen').classList.add('hidden');
-            document.getElementById('captureScreen').classList.remove('hidden');
+            if (!unitNum) { alert('Enter unit number'); return; }
+            if (penCount < 1) { alert('Enter number of penetrations'); return; }
+            if (!level) { alert('Select level'); return; }
             
-            renderCapture();
+            const areas = areasStr ? areasStr.split(',').map(a => a.trim()).filter(a => a) : [];
+            
+            const id = unitNum.replace(/\s+/g, '_');
+            
+            // Initialize penetrations (unplaced)
+            const penetrations = {};
+            for (let i = 1; i <= penCount; i++) {
+                penetrations[i] = { area: null, x: null, y: null, comment: '', captured: {} };
+            }
+            
+            units[id] = {
+                unit_number: unitNum,
+                num_penetrations: penCount,
+                level: level,
+                areas: areas,
+                penetrations: penetrations,
+                drawings: {}
+            };
+            
+            saveState();
+            showToast(`Unit ${unitNum} created with ${penCount} penetrations!`);
+            
+            // Reset form
+            document.getElementById('unitInput').value = '';
+            document.getElementById('penCountInput').value = '';
+            document.getElementById('levelSelect').value = '';
+            document.getElementById('areasInput').value = '';
+            
+            renderUnitList();
         }
         
-        // ═══════════════════════════════════════════════════════════════════
-        // ROOM LIST
-        // ═══════════════════════════════════════════════════════════════════
+        function deleteUnit(id) {
+            if (!confirm(`Delete Unit ${units[id].unit_number}? This cannot be undone.`)) return;
+            delete units[id];
+            saveState();
+            renderUnitList();
+        }
         
-        function renderRoomList() {
-            const container = document.getElementById('roomList');
-            const emptyState = document.getElementById('emptyState');
-            const roomNums = Object.keys(rooms).sort();
+        function editUnit() {
+            if (!currentUnit) return;
+            const unit = units[currentUnit];
             
-            if (roomNums.length === 0) {
-                container.innerHTML = '';
-                emptyState.classList.remove('hidden');
+            const newNum = prompt('Unit Number:', unit.unit_number);
+            if (newNum === null) return;
+            
+            const newLevel = prompt('Level (L1-L6):', unit.level);
+            if (newLevel === null) return;
+            
+            const newAreas = prompt('Drawing Areas (comma-separated):', unit.areas.join(','));
+            if (newAreas === null) return;
+            
+            unit.unit_number = newNum.trim() || unit.unit_number;
+            unit.level = newLevel.trim() || unit.level;
+            unit.areas = newAreas ? newAreas.split(',').map(a => a.trim()).filter(a => a) : unit.areas;
+            
+            saveState();
+            
+            // Update UI
+            document.getElementById('drawingTitle').textContent = `Unit ${unit.unit_number}`;
+            document.getElementById('drawingSubtitle').textContent = 
+                `${unit.num_penetrations} penetrations • ${unit.level}`;
+            
+            // Update area dropdown
+            const areaSelect = document.getElementById('areaSelect');
+            areaSelect.innerHTML = '<option value="">Select Area...</option>';
+            unit.areas.forEach(a => {
+                const key = `${unit.level}-${a}`;
+                areaSelect.innerHTML += `<option value="${key}">Area ${a}</option>`;
+            });
+            
+            showToast('Unit updated!');
+        }
+        
+        function addPenetrations() {
+            if (!currentUnit) return;
+            const unit = units[currentUnit];
+            
+            const addCount = prompt('How many penetrations to add?', '5');
+            if (addCount === null) return;
+            
+            const count = parseInt(addCount);
+            if (isNaN(count) || count < 1) {
+                showToast('Invalid number');
                 return;
             }
             
-            emptyState.classList.add('hidden');
-            container.innerHTML = roomNums.map(roomNum => {
-                const room = rooms[roomNum];
-                const total = room.num_penetrations * 2 * 3 * 2;
-                const captured = Object.keys(room.captured || {}).length;
-                const pct = Math.round((captured / total) * 100);
-                const hasComments = Object.values(room.comments || {}).some(c => c.trim());
+            const oldCount = unit.num_penetrations;
+            const newCount = oldCount + count;
+            
+            // Add new penetrations
+            for (let i = oldCount + 1; i <= newCount; i++) {
+                unit.penetrations[i] = { area: null, x: null, y: null, comment: '', captured: {}, status: 'active' };
+            }
+            
+            unit.num_penetrations = newCount;
+            saveState();
+            
+            // Update UI
+            document.getElementById('drawingSubtitle').textContent = 
+                `${unit.num_penetrations} penetrations • ${unit.level}`;
+            
+            renderPenList();
+            updateNextPenNum();
+            
+            showToast(`Added ${count} penetrations (now ${newCount} total)`);
+        }
+        
+        function renderUnitList() {
+            const container = document.getElementById('unitList');
+            const empty = document.getElementById('emptyState');
+            const ids = Object.keys(units);
+            
+            if (ids.length === 0) {
+                container.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            
+            empty.classList.add('hidden');
+            container.innerHTML = ids.map(id => {
+                const u = units[id];
+                const { placed, photos, total, skipped } = getUnitProgress(u);
+                const pct = total > 0 ? Math.round((photos / total) * 100) : 0;
                 
                 return `
-                    <div class="room-item" onclick="showCapture('${roomNum}')">
-                        <div>
-                            <h4>Room ${roomNum} ${hasComments ? '💬' : ''}</h4>
-                            <p>${room.floor || '---'} • ${room.wing || '---'} • ${room.num_penetrations} pen.</p>
+                    <div class="unit-item">
+                        <div onclick="showDrawing('${id}')" style="flex: 1; cursor: pointer;">
+                            <h4>Unit ${u.unit_number}</h4>
+                            <p>${u.level} • ${u.num_penetrations} pen.${skipped > 0 ? ` (${skipped} skip)` : ''} • ${placed} placed</p>
                         </div>
-                        <div class="progress">
-                            <div class="progress-pct ${pct === 100 ? 'complete' : ''}">${pct}%</div>
-                            <div style="font-size:12px;color:var(--gray-500);">${captured}/${total}</div>
+                        <div class="unit-progress" onclick="showDrawing('${id}')" style="cursor: pointer;">
+                            <div class="pct ${pct === 100 ? 'complete' : ''}">${pct}%</div>
+                            <div style="font-size: 11px; color: var(--gray-500);">${photos}/${total}</div>
+                        </div>
+                        <div style="display: flex; gap: 4px; margin-left: 8px;">
+                            <button class="btn btn-small btn-success" onclick="event.stopPropagation(); generatePDF('${id}')" title="Generate PDF Report">📋</button>
+                            <button class="btn btn-small btn-teal" onclick="event.stopPropagation(); exportForPipeline('${id}')" title="Export for Python pipeline">📄</button>
+                            <button class="btn btn-small btn-secondary" onclick="event.stopPropagation(); deleteUnit('${id}')" title="Delete">🗑</button>
                         </div>
                     </div>
                 `;
             }).join('');
         }
         
-        // ═══════════════════════════════════════════════════════════════════
-        // ROOM SETUP
-        // ═══════════════════════════════════════════════════════════════════
-        
-        function initSetup() {
-            const picker = document.getElementById('penPicker');
-            const roomInput = document.getElementById('roomNumberInput');
-            const floorSelect = document.getElementById('floorSelect');
-            const wingSelect = document.getElementById('wingSelect');
-            const createBtn = document.getElementById('createRoomBtn');
+        function getUnitProgress(u) {
+            let placed = 0;
+            let photos = 0;
+            let skipped = 0;
+            let activePens = 0;
             
-            picker.querySelectorAll('button').forEach(btn => {
-                btn.onclick = () => {
-                    picker.querySelectorAll('button').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    checkForm();
-                };
-            });
-            
-            roomInput.oninput = checkForm;
-            floorSelect.onchange = checkForm;
-            wingSelect.onchange = checkForm;
-            
-            function checkForm() {
-                const selectedPen = document.querySelector('#penPicker button.selected');
-                const valid = roomInput.value.trim() && selectedPen && floorSelect.value && wingSelect.value;
-                createBtn.disabled = !valid;
+            for (let p = 1; p <= u.num_penetrations; p++) {
+                const pen = u.penetrations[p];
+                if (pen && pen.status === 'skip') {
+                    skipped++;
+                    continue;
+                }
+                activePens++;
+                if (pen && pen.x !== null) placed++;
+                if (pen && pen.captured) {
+                    photos += Object.keys(pen.captured).length;
+                }
             }
+            
+            const total = activePens * 12; // 3 stages × 2 cuts × 2 photos (excluding skipped)
+            
+            return { placed, photos, total, skipped, activePens };
         }
         
-        function saveRoom() {
-            const roomNum = document.getElementById('roomNumberInput').value.trim();
-            const floor = document.getElementById('floorSelect').value;
-            const wing = document.getElementById('wingSelect').value;
-            const pen = parseInt(document.querySelector('#penPicker button.selected')?.dataset.val || 1);
+        // ═══════════════════════════════════════════════════════════════════
+        // DRAWING & AREA MANAGEMENT
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function loadArea() {
+            const areaKey = document.getElementById('areaSelect').value;
+            if (!areaKey) return;
             
-            if (editMode && rooms[roomNum]) {
-                // Preserve existing data when editing
-                rooms[roomNum].num_penetrations = pen;
-                rooms[roomNum].floor = floor;
-                rooms[roomNum].wing = wing;
-                showToast(`Room ${roomNum} updated!`);
+            currentArea = areaKey;
+            const unit = units[currentUnit];
+            
+            // Check if we have a saved drawing for this area
+            if (unit.drawings && unit.drawings[areaKey]) {
+                showDrawingImage(unit.drawings[areaKey]);
             } else {
-                rooms[roomNum] = {
-                    num_penetrations: pen,
-                    floor: floor,
-                    wing: wing,
-                    captured: {},
-                    comments: {}
+                // Try to load from file system (filename pattern)
+                const img = document.getElementById('drawingImage');
+                const filename = `floor_${areaKey.replace('-', '_area')}.png`;
+                img.src = filename;
+                
+                img.onload = () => {
+                    document.getElementById('noDrawing').style.display = 'none';
+                    document.getElementById('drawingWrapper').style.display = 'inline-block';
+                    document.getElementById('areaStatus').textContent = `Loaded: ${filename}`;
+                    resetZoom();
+                    renderMarkers();
                 };
-                showToast(`Room ${roomNum} created!`);
+                
+                img.onerror = () => {
+                    document.getElementById('areaStatus').textContent = `No image for ${areaKey}`;
+                    document.getElementById('noDrawing').style.display = 'flex';
+                    document.getElementById('drawingWrapper').style.display = 'none';
+                };
             }
             
-            saveState();
-            showCapture(roomNum);
+            updateNextPenNum();
+            renderPenList();
+        }
+        
+        document.getElementById('drawingInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file || !currentUnit) return;
+            
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const dataUrl = ev.target.result;
+                
+                // Save to unit
+                if (!currentArea) {
+                    // If no area selected, use first available
+                    const unit = units[currentUnit];
+                    if (unit.areas.length > 0) {
+                        currentArea = `${unit.level}-${unit.areas[0]}`;
+                        document.getElementById('areaSelect').value = currentArea;
+                    } else {
+                        currentArea = 'custom-1';
+                    }
+                }
+                
+                units[currentUnit].drawings[currentArea] = dataUrl;
+                saveState();
+                
+                showDrawingImage(dataUrl);
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        });
+        
+        function showDrawingImage(src) {
+            const img = document.getElementById('drawingImage');
+            img.src = src;
+            img.onload = () => {
+                document.getElementById('noDrawing').style.display = 'none';
+                document.getElementById('drawingWrapper').style.display = 'inline-block';
+                document.getElementById('areaStatus').textContent = `Drawing loaded`;
+                resetZoom();
+                renderMarkers();
+            };
         }
         
         // ═══════════════════════════════════════════════════════════════════
-        // EDIT MODAL
+        // PENETRATION PLACEMENT
         // ═══════════════════════════════════════════════════════════════════
         
-        function editRoom() {
-            const room = rooms[currentRoom];
-            if (!room) return;
-            
-            document.getElementById('editRoomNum').textContent = currentRoom;
-            document.getElementById('editFloorSelect').value = room.floor || '';
-            document.getElementById('editWingSelect').value = room.wing || '';
-            
-            document.querySelectorAll('#editPenPicker button').forEach(btn => {
-                btn.classList.toggle('selected', parseInt(btn.dataset.val) === room.num_penetrations);
-                btn.onclick = () => {
-                    document.querySelectorAll('#editPenPicker button').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                };
-            });
-            
-            document.getElementById('editModal').classList.remove('hidden');
+        function togglePlaceMode() {
+            placeMode = !placeMode;
+            updateModeUI();
         }
         
-        function closeEditModal(event) {
-            if (event.target.id === 'editModal') {
-                document.getElementById('editModal').classList.add('hidden');
+        function updateModeUI() {
+            const banner = document.getElementById('modeBanner');
+            const placeBtn = document.querySelector('[onclick="togglePlaceMode()"]');
+            
+            if (placeMode) {
+                banner.classList.remove('hidden');
+                banner.classList.add('placing');
+                placeBtn.classList.remove('btn-teal');
+                placeBtn.classList.add('btn-primary');
+                placeBtn.textContent = '✓ Done';
+                updateNextPenNum();
+            } else {
+                banner.classList.add('hidden');
+                placeBtn.classList.remove('btn-primary');
+                placeBtn.classList.add('btn-teal');
+                placeBtn.textContent = '📍 Place';
             }
         }
         
-        function saveEditRoom() {
-            const room = rooms[currentRoom];
-            if (!room) return;
+        function updateNextPenNum() {
+            const unit = units[currentUnit];
+            if (!unit) return;
             
-            const newPen = parseInt(document.querySelector('#editPenPicker button.selected')?.dataset.val || room.num_penetrations);
-            room.num_penetrations = newPen;
-            room.floor = document.getElementById('editFloorSelect').value;
-            room.wing = document.getElementById('editWingSelect').value;
-            
-            saveState();
-            document.getElementById('editModal').classList.add('hidden');
-            renderCapture();
-            showToast('Room updated!');
+            // Find first unplaced penetration
+            for (let p = 1; p <= unit.num_penetrations; p++) {
+                if (!unit.penetrations[p].area) {
+                    document.getElementById('nextPenNum').textContent = p;
+                    return;
+                }
+            }
+            document.getElementById('nextPenNum').textContent = 'All placed!';
         }
         
-        // ═══════════════════════════════════════════════════════════════════
-        // CAPTURE SCREEN
-        // ═══════════════════════════════════════════════════════════════════
-        
-        function setStage(stage) {
-            currentStage = stage;
-            renderCapture();
+        function handleDrawingClick(event) {
+            if (!currentArea || !currentUnit) return;
+            
+            const img = document.getElementById('drawingImage');
+            const rect = img.getBoundingClientRect();
+            
+            const x = (event.clientX - rect.left) / rect.width;
+            const y = (event.clientY - rect.top) / rect.height;
+            
+            // Handle relocate mode
+            if (relocateMode) {
+                const unit = units[currentUnit];
+                unit.penetrations[relocateMode].area = currentArea;
+                unit.penetrations[relocateMode].x = x;
+                unit.penetrations[relocateMode].y = y;
+                saveState();
+                renderMarkers();
+                renderPenList();
+                showToast(`Relocated Pen #${relocateMode}`);
+                relocateMode = false;
+                document.getElementById('modeBanner').classList.add('hidden');
+                return;
+            }
+            
+            if (placeMode) {
+                // Place next unplaced penetration
+                const unit = units[currentUnit];
+                for (let p = 1; p <= unit.num_penetrations; p++) {
+                    if (!unit.penetrations[p].area) {
+                        unit.penetrations[p].area = currentArea;
+                        unit.penetrations[p].x = x;
+                        unit.penetrations[p].y = y;
+                        saveState();
+                        renderMarkers();
+                        renderPenList();
+                        updateNextPenNum();
+                        showToast(`Placed Pen #${p}`);
+                        return;
+                    }
+                }
+                showToast('All penetrations placed!');
+                placeMode = false;
+                updateModeUI();
+            }
         }
         
-        function renderCapture() {
-            const room = rooms[currentRoom];
-            if (!room) { showHome(); return; }
+        function renderMarkers() {
+            const wrapper = document.getElementById('drawingWrapper');
+            wrapper.querySelectorAll('.pen-marker').forEach(m => m.remove());
             
-            // Initialize comments object if missing
-            if (!room.comments) room.comments = {};
+            if (!currentUnit || !currentArea) return;
             
-            document.getElementById('captureRoomNum').textContent = currentRoom;
-            document.getElementById('captureRoomMeta').textContent = 
-                `${room.floor} • ${room.wing} • ${room.num_penetrations} penetration(s)`;
+            const unit = units[currentUnit];
             
-            // Update stage tabs
-            ['before', 'after', 'patch'].forEach(stage => {
-                const tab = document.querySelector(`.stage-tab[data-stage="${stage}"]`);
-                const countEl = document.getElementById(`${stage}Count`);
-                const needed = room.num_penetrations * 2 * 2;
-                const captured = countCaptured(room, stage);
+            for (let p = 1; p <= unit.num_penetrations; p++) {
+                const pen = unit.penetrations[p];
+                if (pen.area !== currentArea || pen.x === null) continue;
                 
-                countEl.textContent = `${captured}/${needed}`;
-                tab.classList.toggle('active', stage === currentStage);
-                tab.classList.toggle('complete', captured >= needed && stage !== currentStage);
-            });
-            
-            // Render penetrations
-            const container = document.getElementById('penetrationsContainer');
-            container.innerHTML = '';
-            
-            for (let pen = 1; pen <= room.num_penetrations; pen++) {
-                const penCaptured = countCapturedPen(room, pen, currentStage);
-                const penNeeded = 4;
-                const comment = room.comments[pen] || '';
+                const status = getPenStatus(pen);
                 
-                const section = document.createElement('div');
-                section.className = 'penetration-section';
-                section.innerHTML = `
-                    <div class="penetration-header">
-                        <h3>Penetration ${pen}</h3>
-                        <span class="penetration-status ${penCaptured >= penNeeded ? 'complete' : ''}">
-                            ${penCaptured >= penNeeded ? '✓ Complete' : `${penCaptured}/${penNeeded}`}
-                        </span>
-                    </div>
-                    <div class="penetration-comment">
-                        <textarea 
-                            placeholder="Notes for penetration ${pen} (e.g., pipe size, issues, special conditions...)"
-                            onchange="saveComment(${pen}, this.value)"
-                            onblur="saveComment(${pen}, this.value)"
-                        >${comment}</textarea>
-                    </div>
-                    <div class="cuts-row">
-                        ${renderCut(pen, 'A', 'Room Side')}
-                        ${renderCut(pen, 'B', 'Corridor Side')}
+                const el = document.createElement('div');
+                el.className = `pen-marker ${status}`;
+                el.textContent = p;
+                el.style.left = `${pen.x * 100}%`;
+                el.style.top = `${pen.y * 100}%`;
+                el.onclick = (e) => {
+                    e.stopPropagation();
+                    openCapture(p);
+                };
+                wrapper.appendChild(el);
+            }
+        }
+        
+        function getPenStatus(pen) {
+            if (pen.status === 'skip') return 'skipped';
+            if (!pen.area) return 'unmarked';
+            const capturedCount = Object.keys(pen.captured || {}).length;
+            if (capturedCount === 0) return 'marked';
+            if (capturedCount >= 12) return 'complete';
+            return 'partial';
+        }
+        
+        function renderPenList() {
+            const container = document.getElementById('penList');
+            if (!currentUnit) { container.innerHTML = ''; return; }
+            
+            const unit = units[currentUnit];
+            let html = '';
+            
+            for (let p = 1; p <= unit.num_penetrations; p++) {
+                const pen = unit.penetrations[p];
+                const status = getPenStatus(pen);
+                const capturedCount = Object.keys(pen.captured || {}).length;
+                const areaLabel = pen.area ? pen.area.split('-')[1] : '—';
+                const skipLabel = status === 'skipped' ? ' ⏭' : '';
+                const statusText = status === 'skipped' ? 'SKIP' : `${capturedCount}/12`;
+                
+                html += `
+                    <div class="pen-list-item" onclick="openCapture(${p})" style="${status === 'skipped' ? 'opacity: 0.6;' : ''}">
+                        <span>Pen ${p}${skipLabel} (Area ${areaLabel})</span>
+                        <span class="status ${status}">${statusText}</span>
                     </div>
                 `;
-                container.appendChild(section);
             }
-        }
-        
-        function renderCut(pen, cut, label) {
-            const room = rooms[currentRoom];
-            const cap1 = isPhotoCaptured(room, pen, cut, 1, currentStage);
-            const cap2 = isPhotoCaptured(room, pen, cut, 2, currentStage);
             
-            return `
-                <div class="cut-card">
-                    <h4>Cut ${cut}</h4>
-                    <div class="cut-label">${label}</div>
-                    <div class="photo-buttons">
-                        <button class="photo-btn ${cap1 ? 'captured' : ''}" onclick="takePhoto(${pen}, '${cut}', 1)">
-                            <span class="icon">${cap1 ? '✓' : '📷'}</span>
-                            <span>Photo 1</span>
-                        </button>
-                        <button class="photo-btn ${cap2 ? 'captured' : ''}" onclick="takePhoto(${pen}, '${cut}', 2)">
-                            <span class="icon">${cap2 ? '✓' : '📷'}</span>
-                            <span>Photo 2</span>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function saveComment(pen, value) {
-            const room = rooms[currentRoom];
-            if (!room) return;
-            if (!room.comments) room.comments = {};
-            room.comments[pen] = value;
-            saveState();
-        }
-        
-        function countCaptured(room, stage) {
-            return Object.keys(room.captured || {}).filter(k => k.startsWith(`${stage}_`)).length;
-        }
-        
-        function countCapturedPen(room, pen, stage) {
-            return Object.keys(room.captured || {}).filter(k => k.startsWith(`${stage}_${pen}_`)).length;
-        }
-        
-        function isPhotoCaptured(room, pen, cut, slot, stage) {
-            const key = `${stage}_${pen}_${cut}_${slot}`;
-            return room.captured && room.captured[key];
-        }
-        
-        function markCaptured(pen, cut, slot, stage) {
-            const room = rooms[currentRoom];
-            if (!room.captured) room.captured = {};
-            room.captured[`${stage}_${pen}_${cut}_${slot}`] = true;
-            saveState();
+            container.innerHTML = html;
         }
         
         // ═══════════════════════════════════════════════════════════════════
         // PHOTO CAPTURE
         // ═══════════════════════════════════════════════════════════════════
         
-        function takePhoto(pen, cut, slot) {
-            pendingPhoto = { room: currentRoom, pen, cut, slot, stage: currentStage };
+        function openCapture(penNum) {
+            if (!currentUnit) return;
+            
+            currentPen = penNum;
+            currentStage = 'before';
+            
+            document.getElementById('captureModal').classList.remove('hidden');
+            document.getElementById('capturePenTitle').textContent = `Penetration ${penNum}`;
+            
+            const unit = units[currentUnit];
+            const pen = unit.penetrations[penNum];
+            document.getElementById('penComment').value = pen.comment || '';
+            
+            updateSkipButton();
+            renderCaptureUI();
+        }
+        
+        function closeCapture() {
+            document.getElementById('captureModal').classList.add('hidden');
+            currentPen = null;
+            renderMarkers();
+            renderPenList();
+        }
+        
+        function setStage(stage) {
+            currentStage = stage;
+            renderCaptureUI();
+        }
+        
+        function renderCaptureUI() {
+            const unit = units[currentUnit];
+            const pen = unit.penetrations[currentPen];
+            
+            // Update stage tabs
+            ['before', 'after', 'patch'].forEach(stage => {
+                const tab = document.querySelector(`.stage-tab[data-stage="${stage}"]`);
+                const count = countStagePhotos(pen, stage);
+                tab.querySelector('div:last-child').textContent = `${count}/4`;
+                tab.classList.toggle('active', stage === currentStage);
+                tab.classList.toggle('complete', count >= 4 && stage !== currentStage);
+            });
+            
+            // Render cut cards
+            const container = document.getElementById('cutsContainer');
+            container.innerHTML = `
+                <div class="cut-card">
+                    <h4>Cut A</h4>
+                    <div class="cut-label">Room Side</div>
+                    <div class="photo-buttons">
+                        ${renderPhotoBtn(pen, 'A', 1)}
+                        ${renderPhotoBtn(pen, 'A', 2)}
+                    </div>
+                </div>
+                <div class="cut-card">
+                    <h4>Cut B</h4>
+                    <div class="cut-label">Corridor Side</div>
+                    <div class="photo-buttons">
+                        ${renderPhotoBtn(pen, 'B', 1)}
+                        ${renderPhotoBtn(pen, 'B', 2)}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderPhotoBtn(pen, cut, slot) {
+            const key = `${currentStage}_${cut}_${slot}`;
+            const captured = pen.captured && pen.captured[key];
+            
+            return `
+                <button class="photo-btn ${captured ? 'captured' : ''}" onclick="takePhoto('${cut}', ${slot})">
+                    <span class="icon">${captured ? '✓' : '📷'}</span>
+                    <span>Photo ${slot}</span>
+                </button>
+            `;
+        }
+        
+        function countStagePhotos(pen, stage) {
+            if (!pen.captured) return 0;
+            return Object.keys(pen.captured).filter(k => k.startsWith(stage + '_')).length;
+        }
+        
+        function takePhoto(cut, slot) {
+            pendingPhoto = { pen: currentPen, cut, slot, stage: currentStage };
             document.getElementById('photoInput').click();
         }
         
@@ -765,17 +1187,29 @@
             if (!e.target.files.length || !pendingPhoto) return;
             
             const file = e.target.files[0];
-            const { room, pen, cut, slot, stage } = pendingPhoto;
-            const filename = `${room}_pen${pen}_cut${cut}_${stage}_${slot}.jpg`;
+            const { pen, cut, slot, stage } = pendingPhoto;
+            const unit = units[currentUnit];
             
+            // Generate filename
+            const filename = `${unit.unit_number}_pen${pen}_cut${cut}_${stage}_${slot}.jpg`;
+            
+            // Compress
             const blob = await compressImage(file);
+            
+            // Save
             saveFile(blob, filename);
-            markCaptured(pen, cut, slot, stage);
+            
+            // Mark captured
+            const key = `${stage}_${cut}_${slot}`;
+            unit.penetrations[pen].captured[key] = true;
+            saveState();
+            
+            // Update UI
+            renderCaptureUI();
+            showToast(`Saved: ${filename}`);
             
             e.target.value = '';
             pendingPhoto = null;
-            renderCapture();
-            showToast(`Saved: ${filename}`);
         });
         
         async function compressImage(file) {
@@ -786,7 +1220,8 @@
                 
                 img.onload = () => {
                     const maxDim = 1500;
-                    let width = img.width, height = img.height;
+                    let width = img.width;
+                    let height = img.height;
                     
                     if (width > maxDim || height > maxDim) {
                         if (width > height) {
@@ -819,55 +1254,393 @@
             setTimeout(() => URL.revokeObjectURL(url), 1000);
         }
         
+        function saveComment() {
+            const comment = document.getElementById('penComment').value;
+            units[currentUnit].penetrations[currentPen].comment = comment;
+            saveState();
+        }
+        
+        function toggleSkip() {
+            const pen = units[currentUnit].penetrations[currentPen];
+            pen.status = pen.status === 'skip' ? 'active' : 'skip';
+            saveState();
+            updateSkipButton();
+            renderMarkers();
+            renderPenList();
+            showToast(pen.status === 'skip' ? `Pen ${currentPen} marked as exploratory/skip` : `Pen ${currentPen} marked as active`);
+        }
+        
+        function updateSkipButton() {
+            const pen = units[currentUnit].penetrations[currentPen];
+            const btn = document.getElementById('skipBtn');
+            if (pen.status === 'skip') {
+                btn.textContent = '✓ Mark as Active';
+                btn.style.background = 'var(--success)';
+            } else {
+                btn.textContent = '⏭ Mark as Exploratory/Skip';
+                btn.style.background = 'var(--skip)';
+            }
+        }
+        
+        function relocatePen() {
+            closeCapture();
+            relocateMode = currentPen;
+            document.getElementById('modeBanner').classList.remove('hidden');
+            document.getElementById('modeBanner').classList.add('placing');
+            document.getElementById('modeBanner').innerHTML = `Click on drawing to relocate Pen #${currentPen}`;
+            showToast(`Click on drawing to relocate Pen #${currentPen}`);
+        }
+        
+        function deletePen() {
+            if (!confirm(`Delete Penetration ${currentPen}? This will remove all captured data for this penetration.`)) return;
+            
+            const unit = units[currentUnit];
+            
+            // Reset this penetration
+            unit.penetrations[currentPen] = { area: null, x: null, y: null, comment: '', captured: {}, status: 'active' };
+            
+            saveState();
+            closeCapture();
+            renderMarkers();
+            renderPenList();
+            showToast(`Penetration ${currentPen} deleted`);
+        }
+        
         // ═══════════════════════════════════════════════════════════════════
-        // EXPORT NOTES
+        // ZOOM
         // ═══════════════════════════════════════════════════════════════════
         
-        function exportNotes() {
-            const room = rooms[currentRoom];
-            if (!room) return;
+        function setZoom(z) {
+            zoom = Math.max(0.25, Math.min(3, z));
+            document.getElementById('drawingWrapper').style.transform = `scale(${zoom})`;
+            document.getElementById('zoomLevel').textContent = Math.round(zoom * 100);
+        }
+        
+        function zoomIn() { setZoom(zoom + 0.25); }
+        function zoomOut() { setZoom(zoom - 0.25); }
+        function resetZoom() { setZoom(1); }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // IMPORT/EXPORT
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function exportAll() {
+            const data = {
+                version: 1,
+                exported_at: new Date().toISOString(),
+                units: units
+            };
             
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `nccs_residences_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('Exported master file!');
+        }
+        
+        // Export files compatible with Python report pipeline
+        function exportForPipeline(unitId) {
+            const unit = units[unitId];
+            if (!unit) return;
+            
+            const unitNum = unit.unit_number;
+            
+            // 1. room_config.json
+            const config = {
+                room_number: unitNum,
+                num_penetrations: unit.num_penetrations,
+                floor: unit.level,
+                wing: 'Residence',
+                created: new Date().toISOString()
+            };
+            downloadJSON(config, `${unitNum}_room_config.json`);
+            
+            // 2. notes.json (comments per penetration)
             const notes = {
-                room_number: currentRoom,
-                floor: room.floor,
-                wing: room.wing,
-                num_penetrations: room.num_penetrations,
+                room_number: unitNum,
+                floor: unit.level,
+                wing: 'Residence',
+                num_penetrations: unit.num_penetrations,
                 exported_at: new Date().toISOString(),
                 penetration_comments: {}
             };
-            
-            for (let pen = 1; pen <= room.num_penetrations; pen++) {
-                notes.penetration_comments[pen] = room.comments?.[pen] || '';
+            for (let p = 1; p <= unit.num_penetrations; p++) {
+                const pen = unit.penetrations[p];
+                if (pen && pen.comment) {
+                    notes.penetration_comments[p] = pen.comment;
+                }
             }
+            downloadJSON(notes, `${unitNum}_notes.json`);
             
-            const json = JSON.stringify(notes, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const filename = `${currentRoom}_notes.json`;
+            // 3. penetration_map.json (floor plan coordinates)
+            const penMap = {
+                version: 1,
+                exported_at: new Date().toISOString(),
+                room: unitNum,
+                level: unit.level,
+                penetrations: {}
+            };
+            for (let p = 1; p <= unit.num_penetrations; p++) {
+                const pen = unit.penetrations[p];
+                if (pen && pen.area && pen.x !== null) {
+                    if (!penMap.penetrations[pen.area]) {
+                        penMap.penetrations[pen.area] = [];
+                    }
+                    penMap.penetrations[pen.area].push({
+                        id: `${unitNum}-P${p}`,
+                        room: unitNum,
+                        pen: p,
+                        x: pen.x,
+                        y: pen.y
+                    });
+                }
+            }
+            downloadJSON(penMap, `${unitNum}_penetration_map.json`);
             
-            saveFile(blob, filename);
-            showToast(`Exported: ${filename}`);
+            showToast(`Exported 3 files for Unit ${unitNum}!`);
+        }
+        
+        function downloadJSON(data, filename) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
         }
         
         // ═══════════════════════════════════════════════════════════════════
-        // DELETE ROOM
+        // PDF GENERATION (In-Browser)
         // ═══════════════════════════════════════════════════════════════════
         
-        function confirmDelete() {
-            if (confirm(`Delete Room ${currentRoom}?\n\nThis removes tracking data and comments. Photos already saved are safe.`)) {
-                delete rooms[currentRoom];
-                saveState();
-                showToast(`Room ${currentRoom} deleted`);
-                showHome();
+        async function generatePDF(unitId) {
+            const unit = units[unitId];
+            if (!unit) return;
+            
+            showToast('Generating PDF...');
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const unitNum = unit.unit_number;
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 15;
+            let y = 20;
+            
+            // Colors (RGB)
+            const NCCS_DARK = [26, 26, 46];
+            const NCCS_ACCENT = [233, 69, 96];
+            const NCCS_TEAL = [0, 139, 139];
+            const GRAY = [128, 128, 128];
+            const SUCCESS = [39, 174, 96];
+            const SKIP_COLOR = [155, 89, 182];
+            
+            // Header
+            doc.setFillColor(...NCCS_DARK);
+            doc.rect(0, 0, pageWidth, 35, 'F');
+            doc.setFillColor(...NCCS_ACCENT);
+            doc.rect(0, 35, pageWidth, 3, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('NCCS Fire Caulk Documentation', margin, 15);
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Unit ${unitNum} — ${unit.level} — Montage Residences`, margin, 25);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, margin, 32);
+            
+            y = 50;
+            
+            // Progress Summary
+            const progress = getUnitProgress(unit);
+            const pct = progress.total > 0 ? Math.round((progress.photos / progress.total) * 100) : 0;
+            
+            doc.setTextColor(...NCCS_TEAL);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('PROGRESS SUMMARY', margin, y);
+            y += 8;
+            
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Total Penetrations: ${unit.num_penetrations}`, margin, y);
+            y += 6;
+            doc.text(`Active: ${progress.activePens}  |  Skipped: ${progress.skipped}  |  Placed on Drawing: ${progress.placed}`, margin, y);
+            y += 6;
+            doc.text(`Photo Progress: ${progress.photos} / ${progress.total} (${pct}%)`, margin, y);
+            y += 12;
+            
+            // Penetration Details
+            doc.setTextColor(...NCCS_TEAL);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text('PENETRATION DETAILS', margin, y);
+            y += 10;
+            
+            for (let p = 1; p <= unit.num_penetrations; p++) {
+                const pen = unit.penetrations[p];
+                const status = getPenStatus(pen);
+                const capturedCount = Object.keys(pen.captured || {}).length;
+                const areaLabel = pen.area ? `Area ${pen.area.split('-')[1]}` : 'Not placed';
+                
+                // Check if we need a new page
+                if (y > 270) {
+                    doc.addPage();
+                    y = 20;
+                }
+                
+                // Status indicator
+                if (status === 'skipped') {
+                    doc.setFillColor(...SKIP_COLOR);
+                } else if (status === 'complete') {
+                    doc.setFillColor(...SUCCESS);
+                } else if (status === 'partial') {
+                    doc.setFillColor(243, 156, 18); // Warning orange
+                } else {
+                    doc.setFillColor(...GRAY);
+                }
+                doc.circle(margin + 3, y - 2, 2, 'F');
+                
+                // Penetration info
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                const statusText = status === 'skipped' ? 'SKIP' : 
+                                   status === 'complete' ? 'COMPLETE' : 
+                                   `${capturedCount}/12`;
+                doc.text(`Pen ${p}`, margin + 10, y);
+                
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(...GRAY);
+                doc.text(`${areaLabel}  •  ${statusText}`, margin + 30, y);
+                
+                y += 6;
+                
+                // Comment if exists
+                if (pen.comment) {
+                    doc.setTextColor(60, 60, 60);
+                    doc.setFontSize(9);
+                    
+                    // Word wrap for long comments
+                    const lines = doc.splitTextToSize(pen.comment, pageWidth - margin * 2 - 15);
+                    for (const line of lines) {
+                        if (y > 275) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                        doc.text(line, margin + 10, y);
+                        y += 5;
+                    }
+                }
+                
+                y += 4;
             }
+            
+            // Areas Summary
+            if (unit.areas && unit.areas.length > 0) {
+                if (y > 250) {
+                    doc.addPage();
+                    y = 20;
+                }
+                
+                y += 5;
+                doc.setTextColor(...NCCS_TEAL);
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('DRAWING AREAS', margin, y);
+                y += 8;
+                
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Level: ${unit.level}`, margin, y);
+                y += 6;
+                doc.text(`Areas: ${unit.areas.join(', ')}`, margin, y);
+                y += 6;
+                
+                // Count penetrations per area
+                const areaCount = {};
+                for (let p = 1; p <= unit.num_penetrations; p++) {
+                    const pen = unit.penetrations[p];
+                    if (pen.area) {
+                        areaCount[pen.area] = (areaCount[pen.area] || 0) + 1;
+                    }
+                }
+                for (const [area, count] of Object.entries(areaCount)) {
+                    doc.text(`  ${area}: ${count} penetrations`, margin, y);
+                    y += 5;
+                }
+            }
+            
+            // Footer on last page
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFillColor(244, 244, 244);
+                doc.rect(0, 282, pageWidth, 15, 'F');
+                doc.setDrawColor(200, 200, 200);
+                doc.line(0, 282, pageWidth, 282);
+                
+                doc.setTextColor(...GRAY);
+                doc.setFontSize(8);
+                doc.text(`NCCS — Unit ${unitNum} Summary Report`, margin, 289);
+                doc.text(`Page ${i} of ${pageCount}`, pageWidth - margin - 20, 289);
+            }
+            
+            // Save
+            const filename = `Unit_${unitNum}_Summary_${new Date().toISOString().slice(0,10)}.pdf`;
+            doc.save(filename);
+            
+            showToast(`PDF saved: ${filename}`);
         }
+        
+        document.getElementById('importInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    
+                    if (data.units) {
+                        if (Object.keys(units).length > 0) {
+                            if (confirm('Merge with existing? (Cancel to replace)')) {
+                                Object.assign(units, data.units);
+                            } else {
+                                units = data.units;
+                            }
+                        } else {
+                            units = data.units;
+                        }
+                        
+                        saveState();
+                        renderUnitList();
+                        showToast('Imported!');
+                    }
+                } catch (err) {
+                    alert('Import failed: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
         
         // ═══════════════════════════════════════════════════════════════════
         // TOAST
         // ═══════════════════════════════════════════════════════════════════
         
-        function showToast(message) {
+        function showToast(msg) {
             const toast = document.getElementById('toast');
-            toast.textContent = message;
+            toast.textContent = msg;
             toast.classList.add('visible');
             setTimeout(() => toast.classList.remove('visible'), 2500);
         }
@@ -877,8 +1650,7 @@
         // ═══════════════════════════════════════════════════════════════════
         
         loadState();
-        initSetup();
-        renderRoomList();
+        renderUnitList();
     </script>
 </body>
 </html>
